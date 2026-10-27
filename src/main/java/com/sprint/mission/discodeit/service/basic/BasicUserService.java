@@ -1,9 +1,8 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
-import com.sprint.mission.discodeit.service.ChannelService;
-import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
 import org.springframework.stereotype.Service;
 
@@ -12,18 +11,16 @@ import java.util.*;
 @Service
 public class BasicUserService implements UserService {
     private final UserRepository userRepository;
-    private final ChannelService channelService;
-    private final MessageService messageService;
+    private final ChannelRepository channelRepository;
 
-    public BasicUserService(UserRepository userRepository, ChannelService channelService, MessageService messageService) {
+    public BasicUserService(UserRepository userRepository, ChannelRepository channelRepository) {
         this.userRepository = userRepository;
-        this.channelService = channelService;
-        this.messageService = messageService;
+        this.channelRepository = channelRepository;
     }
 
     @Override
-    public User create(String name) {
-        User user = new User(name);
+    public User create(String name, String email, String password) {
+        User user = new User(name, email, password);
         return this.userRepository.save(user);
     }
 
@@ -38,14 +35,11 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public User update(UUID id, User newUser) {
+    public User update(UUID id, String newName, String newEmail, String newPassword) {
         User user = this.userRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("수정할 유저가 존재하지 않습니다."));
-        // 갱신할 유저 정보의 상태가 활동 중이면 현재 유저도 검사
-        if (!newUser.isDeleted()) {
-            user.validateNotDeleted();
-        }
-        user.update(newUser);
+        user.validateNotDeleted();
+        user.update(newName, newEmail, newPassword);
         return this.userRepository.update(id, user);
     }
 
@@ -57,11 +51,10 @@ public class BasicUserService implements UserService {
 
         // 유저 삭제 시 가입된 채널들에서도 유저 탈퇴
         Set<UUID> channels = new HashSet<>(user.getChannels());
-        channels.forEach(channelId -> this.channelService.removeUserFromChannel(channelId, id));
-
-        // 유저 삭제 시 메세지들도 삭제
-        Set<UUID> messages = new HashSet<>(user.getMessages());
-        messages.forEach(this.messageService::delete);
+        channels.forEach(channelId -> this.channelRepository.findById(channelId).ifPresent(channel -> {
+            channel.removeUser(id);
+            this.channelRepository.update(channelId, channel);
+        }));
 
         this.userRepository.delete(id);
     }

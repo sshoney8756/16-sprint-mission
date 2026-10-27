@@ -32,9 +32,9 @@ public class FileUserRepository extends FileRepository<User> implements UserRepo
     @Override
     public User update(UUID id, User newUser) {
         Map<UUID, User> users = this.readFile(filePath);
-        User user = users.replace(id, newUser);
+        users.replace(id, newUser);
         this.writeFile(users, filePath);
-        return user;
+        return newUser;
     }
 
     @Override

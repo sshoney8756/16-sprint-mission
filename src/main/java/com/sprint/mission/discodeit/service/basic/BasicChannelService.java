@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
@@ -20,8 +21,8 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public Channel create(String name) {
-        Channel channel = new Channel(name);
+    public Channel create(String name, String description, ChannelType type) {
+        Channel channel = new Channel(name, description, type);
         return this.channelRepository.save(channel);
     }
 
@@ -36,14 +37,11 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public Channel update(UUID id, Channel newChannel) {
+    public Channel update(UUID id, String newName, String newDescription) {
         Channel channel = this.channelRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("수정할 채널이 존재하지 않습니다."));
-        // 갱신할 채널 정보의 상태가 활동 중이면 현재 채널도 검사
-        if (!newChannel.isDeleted()) {
-            channel.validateNotDeleted();
-        }
-        channel.update(newChannel);
+        channel.validateNotDeleted();
+        channel.update(newName, newDescription);
         return this.channelRepository.update(id, channel);
     }
 

@@ -32,9 +32,9 @@ public class FileChannelRepository extends FileRepository<Channel> implements Ch
     @Override
     public Channel update(UUID id, Channel newChannel) {
         Map<UUID, Channel> channels = this.readFile(filePath);
-        Channel channel = channels.replace(id, newChannel);
+        channels.replace(id, newChannel);
         this.writeFile(channels, filePath);
-        return channel;
+        return newChannel;
     }
 
     @Override

@@ -32,9 +32,9 @@ public class FileMessageRepository extends FileRepository<Message> implements Me
     @Override
     public Message update(UUID id, Message newMessage) {
         Map<UUID, Message> messages = this.readFile(filePath);
-        Message message = messages.replace(id, newMessage);
+        messages.replace(id, newMessage);
         this.writeFile(messages, filePath);
-        return message;
+        return newMessage;
     }
 
     @Override

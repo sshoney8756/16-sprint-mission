@@ -34,11 +34,6 @@ public abstract class BaseEntity implements Serializable {
         this.deletedAt = Instant.now().toEpochMilli();
     }
 
-    protected void updateToDeleted(Long deletedAt) {
-        this.deletedAt = deletedAt;
-        this.status = EntityStatus.DELETED;
-    }
-
     public Long getCreatedAt() {
         return this.createdAt;
     }

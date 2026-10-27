@@ -4,26 +4,35 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Channel extends BaseEntity {
-    private Set<UUID> users;
-    private Set<UUID> messages;
+    private final Set<UUID> users;
+    private final ChannelType type;
     private String name;
+    private String description;
 
-    public Channel(String name) {
+    public Channel(String name, String description, ChannelType type) {
         super();
         this.name = name;
+        this.description = description;
+        this.type = type;
         this.users = new HashSet<>();
-        this.messages = new LinkedHashSet<>();
     }
 
-    public Channel update(Channel channel) {
-        this.name = channel.name;
-        this.users = channel.getUsers();
-        this.messages = channel.getMessages();
-        if (channel.isDeleted()) {
-            if (this.isDeleted()) throw new IllegalStateException("삭제된 채널은 갱신할 수 없습니다.");
-            this.updateToDeleted(channel.getDeleteAt());
+    public Channel update(String newName, String newDescription) {
+        boolean updated = false;
+        if (newName != null && !newName.equals(this.name)) {
+            this.name = newName;
+            updated = true;
         }
-        super.update();
+
+        if (newDescription != null && !newDescription.equals(this.description)) {
+            this.description = newDescription;
+            updated = true;
+        }
+
+        if (updated) {
+            super.update();
+        }
+
         return this;
     }
 
@@ -41,43 +50,26 @@ public class Channel extends BaseEntity {
         super.update();
     }
 
-    public void addMessage(UUID messageId) {
-        this.messages.add(messageId);
-        super.update();
-    }
-
-    public void removeMessage(UUID messageId) {
-        this.messages.remove(messageId);
-        super.update();
-    }
-
     public String getName() {
         return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Set<UUID> getUsers() {
         return this.users;
     }
 
-    public Set<UUID> getMessages() {
-        return this.messages;
+    public ChannelType getType() {
+        return this.type;
     }
 
     @Override
     public String toString() {
-        String userStr = this.users.stream().map(uuid -> uuid.toString().substring(0, 4)).collect(Collectors.joining(
-                ", "));
-        String msgStr =
-                this.getMessages().stream().map(uuid -> uuid.toString().substring(0, 4)).collect(Collectors.joining(
-                        ", "));
-        return "이름: %s, id: %s, 가입 유저 (id): [ %s ], 메세지 내역 (id): [ %s ], 상태: %s".formatted(
+        String userStr = this.users
+                .stream()
+                .map(uuid -> uuid.toString().substring(0, 4))
+                .collect(Collectors.joining(", "));
+        return "이름: %s, id: %s, 가입 유저 (id): [ %s ]".formatted(
                 this.name,
-                this.getId().toString().substring(0, 4), userStr,
-                msgStr,
-                super.getStatus());
+                this.getId().toString().substring(0, 4), userStr);
     }
 }

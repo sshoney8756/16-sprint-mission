@@ -1,6 +1,7 @@
 package com.sprint.mission.discodeit;
 
 import com.sprint.mission.discodeit.entity.Channel;
+import com.sprint.mission.discodeit.entity.ChannelType;
 import com.sprint.mission.discodeit.entity.Message;
 import com.sprint.mission.discodeit.entity.User;
 
@@ -31,13 +32,13 @@ public class DiscodeitApplication {
 
         try {
             // 등록
-            User user1 = userService.create("김철수");
-            User user2 = userService.create("박영수");
+            User user1 = userService.create("김철수", "cheolsu1234@gmail.com", "asdfqwer!");
+            User user2 = userService.create("박영수", "yeongsu5678@gmail.com", "zxcvasdf@");
             System.out.printf("유저 생성 --> %s\n", user1);
             System.out.printf("유저 생성 --> %s\n\n", user2);
 
-            Channel channel1 = channelService.create("QR 코드");
-            Channel channel2 = channelService.create("위클리 페이퍼");
+            Channel channel1 = channelService.create("QR 코드", "QR 코드 공개 채널", ChannelType.PUBLIC);
+            Channel channel2 = channelService.create("위클리 페이퍼", "매주 위클리 페이퍼 주제 공개 채널", ChannelType.PUBLIC);
             System.out.printf("채널 생성 --> %s\n", channel1);
             System.out.printf("채널 생성 --> %s\n\n", channel2);
 
@@ -95,16 +96,13 @@ public class DiscodeitApplication {
 
             // 수정
             System.out.printf("유저 수정 전 --> %s\n", user1);
-            user1.setName("이수철");
-            userService.update(user1.getId(), user1);
+            user1 = userService.update(user1.getId(), "이수철", null, null);
             System.out.printf("유저 수정 후 --> %s\n\n", user1);
             System.out.printf("채널 수정 전 --> %s\n", channel1);
-            channel1.setName("QR 코드 2");
-            channelService.update(channel1.getId(), channel1);
+            channel1 = channelService.update(channel1.getId(), "QR코드 2", null);
             System.out.printf("채널 수정 후 --> %s\n\n", channel1);
             System.out.printf("메세지 수정 전 --> %s\n", message1);
-            message1.setContent("안녕하세요 이수철입니다!");
-            messageService.update(message1.getId(), message1);
+            message1 = messageService.update(message1.getId(), "안녕하세요 이수철입니다!");
             System.out.printf("메세지 수정 후 --> %s\n\n", message1);
 
             // 삭제

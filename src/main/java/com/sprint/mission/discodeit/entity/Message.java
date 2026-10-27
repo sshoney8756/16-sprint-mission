@@ -14,15 +14,17 @@ public class Message extends BaseEntity {
         this.channelId = channelId;
     }
 
-    public Message update(Message message) {
-        this.sentFromId = message.sentFromId;
-        this.content = message.content;
-        this.channelId = message.channelId;
-        if (message.isDeleted()) {
-            if (this.isDeleted()) throw new IllegalStateException("삭제된 메세지는 갱신할 수 없습니다.");
-            this.updateToDeleted(message.getDeleteAt());
+    public Message update(String newContent) {
+        boolean updated = false;
+        if (newContent != null && !newContent.equals(this.content)) {
+            this.content = newContent;
+            updated = true;
         }
-        super.update();
+
+        if (updated) {
+            super.update();
+        }
+
         return this;
     }
 
@@ -38,19 +40,16 @@ public class Message extends BaseEntity {
         return this.content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
     public UUID getChannelId() {
         return this.channelId;
     }
 
     @Override
     public String toString() {
-        return "id: %s, 보낸 사람 (id): %s, 내용: %s, 채널 (id): %s, 상태: %s".formatted(
+        return "id: %s, 보낸 사람 (id): %s, 내용: %s, 채널 (id): %s".formatted(
                 this.getId().toString().substring(0, 4),
-                this.sentFromId.toString().substring(0, 4), this.content,
-                this.channelId.toString().substring(0, 4), super.getStatus());
+                this.sentFromId.toString().substring(0, 4),
+                this.content,
+                this.channelId.toString().substring(0, 4));
     }
 }
