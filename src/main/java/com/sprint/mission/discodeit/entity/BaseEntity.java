@@ -12,25 +12,25 @@ public abstract class BaseEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
     private final UUID id;
-    private final Long createdAt;
-    private Long updatedAt;
-    private Long deletedAt;
+    private final Instant createdAt;
+    private Instant updatedAt;
+    private Instant deletedAt;
     private EntityStatus status;
 
     protected BaseEntity() {
         this.id = UUID.randomUUID();
-        this.createdAt = Instant.now().toEpochMilli();
+        this.createdAt = Instant.now();
         this.updatedAt = this.createdAt;
         this.status = EntityStatus.ACTIVE;
     }
-    
+
     protected void update() {
-        this.updatedAt = Instant.now().toEpochMilli();
+        this.updatedAt = Instant.now();
     }
 
     public void softDelete() {
         this.status = EntityStatus.DELETED;
-        this.deletedAt = Instant.now().toEpochMilli();
+        this.deletedAt = Instant.now();
     }
 
     public boolean isDeleted() {
