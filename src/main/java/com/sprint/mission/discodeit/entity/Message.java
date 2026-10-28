@@ -12,6 +12,7 @@ public class Message extends BaseEntity implements Updatable {
     private final UUID channelId;
     private Instant updatedAt;
     private String content;
+    private List<UUID> attachmentsIds;
 
     public Message(UUID authorId, String content, UUID channelId) {
         super();
@@ -33,6 +34,16 @@ public class Message extends BaseEntity implements Updatable {
         }
 
         return this;
+    }
+
+    public void addAttachment(UUID attachmentId) {
+        this.attachmentsIds.add(attachmentId);
+        this.update();
+    }
+
+    public void removeAttachment(UUID attachmentId) {
+        this.attachmentsIds.remove(attachmentId);
+        this.update();
     }
 
     public void validateNotDeleted() {

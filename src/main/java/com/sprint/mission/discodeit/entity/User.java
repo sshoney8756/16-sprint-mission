@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 @Getter
 public class User extends BaseEntity implements Updatable {
     private final Set<UUID> channels;
+    private UUID profileId;
     private String name;
     private String email;
     private String password;
