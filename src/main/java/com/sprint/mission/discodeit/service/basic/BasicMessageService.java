@@ -7,6 +7,7 @@ import com.sprint.mission.discodeit.repository.ChannelRepository;
 import com.sprint.mission.discodeit.repository.MessageRepository;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import com.sprint.mission.discodeit.service.MessageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,19 +15,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
+@RequiredArgsConstructor
 @Service
 public class BasicMessageService implements MessageService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final ChannelRepository channelRepository;
-
-    public BasicMessageService(MessageRepository messageRepository,
-                               UserRepository userRepository,
-                               ChannelRepository channelRepository) {
-        this.messageRepository = messageRepository;
-        this.userRepository = userRepository;
-        this.channelRepository = channelRepository;
-    }
 
     @Override
     public Message create(UUID sentFromId, String content, UUID channelId) {
@@ -76,7 +70,7 @@ public class BasicMessageService implements MessageService {
         Message message = this.messageRepository.findById(id).orElseThrow(() -> new NoSuchElementException("삭제할 메세지가 존재하지 " +
                 "않습니다."));
         message.validateNotDeleted();
-        
+
         this.messageRepository.delete(id);
     }
 }

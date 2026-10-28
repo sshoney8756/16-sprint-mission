@@ -1,7 +1,10 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.util.UUID;
 
+@Getter
 public class Message extends BaseEntity {
     private UUID sentFromId;
     private UUID channelId;
@@ -30,18 +33,6 @@ public class Message extends BaseEntity {
 
     public void validateNotDeleted() {
         if (this.isDeleted()) throw new IllegalStateException("삭제된 메세지입니다.");
-    }
-
-    public UUID getSentFromId() {
-        return this.sentFromId;
-    }
-
-    public String getContent() {
-        return this.content;
-    }
-
-    public UUID getChannelId() {
-        return this.channelId;
     }
 
     @Override

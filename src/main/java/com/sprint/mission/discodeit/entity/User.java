@@ -1,8 +1,11 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Getter
 public class User extends BaseEntity {
     private final Set<UUID> channels;
     private String name;
@@ -53,22 +56,6 @@ public class User extends BaseEntity {
     public void removeChannel(UUID channelId) {
         this.channels.remove(channelId);
         super.update();
-    }
-
-    public String getName() {
-        return this.name;
-    }
-
-    public Set<UUID> getChannels() {
-        return this.channels;
-    }
-
-    public String getEmail() {
-        return this.email;
-    }
-
-    public String getPassword() {
-        return this.password;
     }
 
     @Override

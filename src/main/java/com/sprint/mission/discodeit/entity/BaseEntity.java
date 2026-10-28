@@ -1,10 +1,13 @@
 package com.sprint.mission.discodeit.entity;
 
+import lombok.Getter;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.UUID;
 
+@Getter
 public abstract class BaseEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -20,11 +23,7 @@ public abstract class BaseEntity implements Serializable {
         this.updatedAt = this.createdAt;
         this.status = EntityStatus.ACTIVE;
     }
-
-    public UUID getId() {
-        return this.id;
-    }
-
+    
     protected void update() {
         this.updatedAt = Instant.now().toEpochMilli();
     }
@@ -32,22 +31,6 @@ public abstract class BaseEntity implements Serializable {
     public void softDelete() {
         this.status = EntityStatus.DELETED;
         this.deletedAt = Instant.now().toEpochMilli();
-    }
-
-    public Long getCreatedAt() {
-        return this.createdAt;
-    }
-
-    public Long getUpdatedAt() {
-        return this.updatedAt;
-    }
-
-    public Long getDeleteAt() {
-        return this.deletedAt;
-    }
-
-    public EntityStatus getStatus() {
-        return this.status;
     }
 
     public boolean isDeleted() {
