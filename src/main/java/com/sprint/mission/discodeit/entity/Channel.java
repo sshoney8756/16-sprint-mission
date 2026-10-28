@@ -2,18 +2,22 @@ package com.sprint.mission.discodeit.entity;
 
 import lombok.Getter;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
-public class Channel extends BaseEntity {
+public class Channel extends BaseEntity implements Updatable {
     private final Set<UUID> users;
     private final ChannelType type;
+
+    private Instant updatedAt;
     private String name;
     private String description;
 
     public Channel(String name, String description, ChannelType type) {
         super();
+        this.updatedAt = this.getCreatedAt();
         this.name = name;
         this.description = description;
         this.type = type;
@@ -33,10 +37,15 @@ public class Channel extends BaseEntity {
         }
 
         if (updated) {
-            super.update();
+            this.update();
         }
 
         return this;
+    }
+
+    @Override
+    public void update() {
+        this.updatedAt = Instant.now();
     }
 
     public void validateNotDeleted() {
@@ -45,12 +54,12 @@ public class Channel extends BaseEntity {
 
     public void addUser(UUID userId) {
         this.users.add(userId);
-        super.update();
+        this.update();
     }
 
     public void removeUser(UUID userId) {
         this.users.remove(userId);
-        super.update();
+        this.update();
     }
 
     @Override

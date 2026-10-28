@@ -2,16 +2,20 @@ package com.sprint.mission.discodeit.entity;
 
 import lombok.Getter;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
-public class Message extends BaseEntity {
-    private UUID authorId;
-    private UUID channelId;
+public class Message extends BaseEntity implements Updatable {
+    private final UUID authorId;
+    private final UUID channelId;
+    private Instant updatedAt;
     private String content;
 
     public Message(UUID authorId, String content, UUID channelId) {
         super();
+        this.updatedAt = this.getCreatedAt();
         this.authorId = authorId;
         this.content = content;
         this.channelId = channelId;
@@ -25,7 +29,7 @@ public class Message extends BaseEntity {
         }
 
         if (updated) {
-            super.update();
+            this.update();
         }
 
         return this;
@@ -33,6 +37,11 @@ public class Message extends BaseEntity {
 
     public void validateNotDeleted() {
         if (this.isDeleted()) throw new IllegalStateException("삭제된 메세지입니다.");
+    }
+
+    @Override
+    public void update() {
+        this.updatedAt = Instant.now();
     }
 
     @Override

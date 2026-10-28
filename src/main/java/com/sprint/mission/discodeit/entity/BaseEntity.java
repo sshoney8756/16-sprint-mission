@@ -13,19 +13,13 @@ public abstract class BaseEntity implements Serializable {
     private static final long serialVersionUID = 1L;
     private final UUID id;
     private final Instant createdAt;
-    private Instant updatedAt;
     private Instant deletedAt;
     private EntityStatus status;
 
     protected BaseEntity() {
         this.id = UUID.randomUUID();
         this.createdAt = Instant.now();
-        this.updatedAt = this.createdAt;
-        this.status = EntityStatus.ACTIVE;
-    }
-
-    protected void update() {
-        this.updatedAt = Instant.now();
+        this.status = EntityStatus.NORMAL;
     }
 
     public void softDelete() {
@@ -38,7 +32,7 @@ public abstract class BaseEntity implements Serializable {
     }
 
     public enum EntityStatus {
-        ACTIVE("활동 중"),
+        NORMAL("정상"),
         DELETED("삭제됨");
 
         private final String value;
