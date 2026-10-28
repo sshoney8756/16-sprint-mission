@@ -23,13 +23,13 @@ public class BasicMessageService implements MessageService {
     private final ChannelRepository channelRepository;
 
     @Override
-    public Message create(UUID sentFromId, String content, UUID channelId) {
+    public Message create(UUID authorId, String content, UUID channelId) {
         // 유저와 채널 존재 여부 확인
-        User sentFrom = this.userRepository.findById(sentFromId)
+        User author = this.userRepository.findById(authorId)
                 .orElseThrow(() -> new NoSuchElementException("메세지를 보내는 유저가 존재하지 않습니다."));
         Channel channel = this.channelRepository.findById(channelId)
                 .orElseThrow(() -> new NoSuchElementException("메세지를 보낼 채널이 존재하지 않습니다."));
-        sentFrom.validateNotDeleted();
+        author.validateNotDeleted();
         channel.validateNotDeleted();
 
         // 채널 가입 여부 확인
@@ -39,7 +39,7 @@ public class BasicMessageService implements MessageService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("채널에 가입되지 않은 유저입니다."));
 
-        Message message = new Message(sentFromId, content, channelId);
+        Message message = new Message(authorId, content, channelId);
         this.messageRepository.save(message);
 
         return message;

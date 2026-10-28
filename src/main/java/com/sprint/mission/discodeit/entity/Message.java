@@ -6,13 +6,13 @@ import java.util.UUID;
 
 @Getter
 public class Message extends BaseEntity {
-    private UUID sentFromId;
+    private UUID authorId;
     private UUID channelId;
     private String content;
 
-    public Message(UUID sentFromId, String content, UUID channelId) {
+    public Message(UUID authorId, String content, UUID channelId) {
         super();
-        this.sentFromId = sentFromId;
+        this.authorId = authorId;
         this.content = content;
         this.channelId = channelId;
     }
@@ -39,7 +39,7 @@ public class Message extends BaseEntity {
     public String toString() {
         return "id: %s, 보낸 사람 (id): %s, 내용: %s, 채널 (id): %s".formatted(
                 this.getId().toString().substring(0, 4),
-                this.sentFromId.toString().substring(0, 4),
+                this.authorId.toString().substring(0, 4),
                 this.content,
                 this.channelId.toString().substring(0, 4));
     }
