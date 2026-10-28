@@ -24,10 +24,11 @@ public class User extends BaseEntity implements Updatable {
         this.channels = new HashSet<>();
     }
 
-    public User update(String newUsername, String newEmail, String newPassword) {
+    public User update(String newName, String newEmail, String newPassword) {
         boolean updated = false;
-        if (newUsername != null && !newUsername.equals(this.name)) {
-            this.name = newUsername;
+
+        if (newName != null && !newName.equals(this.name)) {
+            this.name = newName;
             updated = true;
         }
         if (newEmail != null && !newEmail.equals(this.email)) {
@@ -59,6 +60,11 @@ public class User extends BaseEntity implements Updatable {
 
     public void removeChannel(UUID channelId) {
         this.channels.remove(channelId);
+        this.update();
+    }
+
+    public void assignProfileImage(UUID profileId) {
+        this.profileId = profileId;
         this.update();
     }
 
