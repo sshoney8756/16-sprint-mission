@@ -55,6 +55,7 @@ public class FileChannelRepository extends FileRepository<Channel> implements Ch
     public void delete(UUID id) {
         Map<UUID, Channel> channels = this.readFile(filePath);
         Channel channel = channels.get(id);
+        if (channel == null || channel.isDeleted()) throw new IllegalArgumentException("삭제할 채널이 존재하지 않습니다.");
         channel.softDelete();
         this.writeFile(channels, filePath);
     }
