@@ -116,11 +116,11 @@ public class BasicUserService implements UserService {
                 () -> new NoSuchElementException("삭제할 유저가 존재하지 않습니다."));
         user.validateNotDeleted();
 
-        Set<UUID> channels = new HashSet<>(user.getChannels());
-        channels.forEach(channelId -> this.channelRepository.findById(channelId).ifPresent(channel -> {
+        // 유저 삭제 관련된 엔티티 처리
+        this.channelRepository.findAllByUserId(id).forEach(channel -> {
             channel.removeUser(id);
-            this.channelRepository.update(channelId, channel);
-        }));
+            this.channelRepository.update(channel.getId(), channel);
+        });
 
         this.binaryContentRepository.findByUserId(id).ifPresent(binaryContent -> this.binaryContentRepository.delete(binaryContent.getId()));
         user.assignProfileImage(null);

@@ -4,11 +4,9 @@ import lombok.Getter;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Getter
 public class User extends BaseEntity implements Updatable {
-    private final Set<UUID> channels;
     private UUID profileId;
     private String name;
     private String email;
@@ -21,7 +19,6 @@ public class User extends BaseEntity implements Updatable {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.channels = new HashSet<>();
     }
 
     public User update(String newName, String newEmail, String newPassword) {
@@ -53,16 +50,6 @@ public class User extends BaseEntity implements Updatable {
         }
     }
 
-    public void addChannel(UUID channelId) {
-        this.channels.add(channelId);
-        this.update();
-    }
-
-    public void removeChannel(UUID channelId) {
-        this.channels.remove(channelId);
-        this.update();
-    }
-
     public void assignProfileImage(UUID profileId) {
         this.profileId = profileId;
         this.update();
@@ -75,11 +62,8 @@ public class User extends BaseEntity implements Updatable {
 
     @Override
     public String toString() {
-        String str =
-                this.channels.stream().map(uuid -> uuid.toString().substring(0, 4)).collect(Collectors.joining(", "));
-        return "이름: %s, id: %s, 가입 채널: [ %s ]".formatted(
+        return "이름: %s, id: %s".formatted(
                 this.name,
-                this.getId().toString().substring(0, 4),
-                str);
+                this.getId().toString().substring(0, 4));
     }
 }

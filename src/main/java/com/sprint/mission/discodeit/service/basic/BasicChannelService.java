@@ -54,10 +54,6 @@ public class BasicChannelService implements ChannelService {
 
         channel.addUser(user.getId());
         this.channelRepository.update(channelId, channel);
-
-        // 채널에 유저 추가 시 유저에도 채널 추가
-        user.addChannel(channel.getId());
-        this.userRepository.update(userId, user);
     }
 
     @Override
@@ -71,10 +67,6 @@ public class BasicChannelService implements ChannelService {
                 () -> new NoSuchElementException("유저가 탈퇴할 채널이 존재하지 않습니다."));
         channel.validateNotDeleted();
 
-        // 채널의 유저 탈퇴 시 유저에도 채널 지우기
-        user.removeChannel(channelId);
-        this.userRepository.update(userId, user);
-
         channel.removeUser(userId);
         this.channelRepository.update(channelId, channel);
     }
@@ -84,13 +76,6 @@ public class BasicChannelService implements ChannelService {
         Channel channel = this.channelRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("삭제할 채널이 존재하지 않습니다."));
         channel.validateNotDeleted();
-
-        channel.getUsers().forEach(userId -> this.userRepository.findById(userId).ifPresent(user -> {
-            if (!user.isDeleted()) {
-                user.removeChannel(id);
-                this.userRepository.update(userId, user);
-            }
-        }));
         this.channelRepository.delete(id);
     }
 }

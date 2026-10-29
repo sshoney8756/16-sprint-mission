@@ -52,6 +52,16 @@ public class FileChannelRepository extends FileRepository<Channel> implements Ch
     }
 
     @Override
+    public List<Channel> findAllByUserId(UUID userId) {
+        Map<UUID, Channel> channels = this.readFile(filePath);
+        return channels.values()
+                .stream()
+                .filter(channel -> channel.getUsers().contains(userId))
+                .filter(channel -> !channel.isDeleted())
+                .toList();
+    }
+
+    @Override
     public void delete(UUID id) {
         Map<UUID, Channel> channels = this.readFile(filePath);
         Channel channel = channels.get(id);
