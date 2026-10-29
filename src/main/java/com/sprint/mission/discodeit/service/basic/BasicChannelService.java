@@ -34,15 +34,24 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public ChannelPrivateCreateResponse createPrivate(ChannelPrivateCreateRequest createRequest) {
-        UUID userId = createRequest.userId();
         List<UUID> memberIds = createRequest.memberIds();
 
         Channel channel = new Channel(memberIds, ChannelType.PRIVATE);
         this.channelRepository.save(channel);
 
-        memberIds.forEach(memberId -> this.readStatusRepository.save(new ReadStatus(memberId, channel.getId())));
+        List<UUID> distinctMemberIds = new ArrayList<>(new LinkedHashSet<>(memberIds));
 
-        return ChannelPrivateCreateResponse.of(channel, userId);
+        distinctMemberIds.forEach(memberId -> {
+            this.userRepository.findById(memberId)
+                    .orElseThrow(() -> new NoSuchElementException("생성할 비공개 채널에 소속될 유저가 존재하지 않습니다."));
+            if (this.readStatusRepository.findByChannelIdAndUserId(channel.getId(), memberId).isPresent()) {
+                throw new IllegalStateException("이미 존재하는 메세지 확인 기록입니다.");
+            }
+
+            this.readStatusRepository.save(new ReadStatus(memberId, channel.getId()));
+        });
+
+        return ChannelPrivateCreateResponse.from(channel);
     }
 
     @Override
@@ -57,7 +66,7 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public List<ChannelFindResponse> findAllByUserId(UUID userId) {
-        return this.channelRepository.findAllByUserId(userId)
+        return this.channelRepository.findAll()
                 .stream()
                 .filter(channel ->
                         channel.getType() == ChannelType.PUBLIC

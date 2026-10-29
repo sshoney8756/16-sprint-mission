@@ -92,21 +92,22 @@ public class BasicUserService implements UserService {
 
         user.update(newName, newEmail, newPassword);
 
-        UUID profileId = null;
         if (imageUpdateRequest != null) {
+            UUID oldProfileId = user.getProfileId();
             String fileName = imageUpdateRequest.fileName();
             String extension = imageUpdateRequest.extension();
             byte[] content = imageUpdateRequest.content();
-            profileId = this.binaryContentRepository.findByUserId(userId)
-                    .orElseThrow(() -> new NoSuchElementException("수정할 유저의 프로필 이미지가 존재하지 않습니다.")).getId();
 
             BinaryContent binaryContent = new BinaryContent(fileName, extension, content);
-            user.assignProfileImage(profileId);
-            this.binaryContentRepository.update(profileId, binaryContent);
+            this.binaryContentRepository.save(binaryContent);
+            user.assignProfileImage(binaryContent.getId());
+
+            if (oldProfileId != null) {
+                this.binaryContentRepository.delete(oldProfileId);
+            }
         }
         this.userRepository.update(userId, user);
-
-        return UserUpdateResponse.of(user, profileId);
+        return UserUpdateResponse.from(user);
     }
 
     @Override
