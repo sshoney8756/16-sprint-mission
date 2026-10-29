@@ -124,6 +124,7 @@ public class BasicUserService implements UserService {
 
         this.binaryContentRepository.findByUserId(id).ifPresent(binaryContent -> this.binaryContentRepository.delete(binaryContent.getId()));
         user.assignProfileImage(null);
+        this.userRepository.update(id, user);
 
         UserStatus userStatus = this.userStatusRepository.findByUserId(id).orElseThrow(
                 () -> new NoSuchElementException("삭제할 유저의 접속 기록이 존재하지 않습니다."));

@@ -24,6 +24,14 @@ public class Channel extends BaseEntity implements Updatable {
         this.users = new HashSet<>();
     }
 
+    public Channel(List<UUID> memberIds, ChannelType type) {
+        super();
+        if (type != ChannelType.PRIVATE) throw new IllegalArgumentException("비공개 채널만 이름과 설명을 생략할 수 있습니다.");
+        this.updatedAt = this.getCreatedAt();
+        this.type = type;
+        this.users = new HashSet<>(memberIds);
+    }
+
     public Channel update(String newName, String newDescription) {
         boolean updated = false;
         if (newName != null && !newName.equals(this.name)) {
