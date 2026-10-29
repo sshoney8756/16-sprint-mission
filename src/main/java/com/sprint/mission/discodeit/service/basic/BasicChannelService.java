@@ -22,9 +22,9 @@ public class BasicChannelService implements ChannelService {
     private final MessageRepository messageRepository;
 
     @Override
-    public ChannelPublicCreateResponse createPublic(ChannelPublicCreateRequest channelPublicCreateRequest) {
-        String name = channelPublicCreateRequest.name();
-        String description = channelPublicCreateRequest.description();
+    public ChannelPublicCreateResponse createPublic(ChannelPublicCreateRequest createRequest) {
+        String name = createRequest.name();
+        String description = createRequest.description();
 
         Channel channel = new Channel(name, description, ChannelType.PUBLIC);
         this.channelRepository.save(channel);
@@ -33,9 +33,9 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public ChannelPrivateCreateResponse createPrivate(ChannelPrivateCreateRequest channelPrivateCreateRequest) {
-        UUID userId = channelPrivateCreateRequest.userId();
-        List<UUID> memberIds = channelPrivateCreateRequest.memberIds();
+    public ChannelPrivateCreateResponse createPrivate(ChannelPrivateCreateRequest createRequest) {
+        UUID userId = createRequest.userId();
+        List<UUID> memberIds = createRequest.memberIds();
 
         Channel channel = new Channel(memberIds, ChannelType.PRIVATE);
         this.channelRepository.save(channel);
@@ -47,8 +47,8 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public ChannelFindResponse findById(UUID id) {
-        Channel channel = this.channelRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("존재하지 않는 채널입니다."));
+        Channel channel = this.channelRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 채널입니다."));
         Instant lastMessageTime = this.messageRepository.findLastMessageOfChannel(id)
                 .map(BaseEntity::getCreatedAt)
                 .orElse(null);
@@ -72,16 +72,16 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public ChannelUpdateResponse update(ChannelUpdateRequest channelUpdateRequest) {
-        UUID id = channelUpdateRequest.id();
+    public ChannelUpdateResponse update(ChannelUpdateRequest updateRequest) {
+        UUID id = updateRequest.id();
 
-        Channel channel = this.channelRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("수정할 채널이 존재하지 않습니다."));
+        Channel channel = this.channelRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("수정할 채널이 존재하지 않습니다."));
         channel.validateNotDeleted();
         if (channel.getType() == ChannelType.PRIVATE) throw new IllegalArgumentException("비공개 채널은 수정할 수 없습니다.");
 
-        String newName = channelUpdateRequest.name();
-        String newDescription = channelUpdateRequest.description();
+        String newName = updateRequest.name();
+        String newDescription = updateRequest.description();
 
         channel.update(newName, newDescription);
         this.channelRepository.update(id, channel);
@@ -90,12 +90,12 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public void addUserToChannel(UUID channelId, UUID userId) {
-        User user = this.userRepository.findById(userId).orElseThrow(
-                () -> new NoSuchElementException("채널에 추가할 유저가 존재하지 않습니다."));
+        User user = this.userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("채널에 추가할 유저가 존재하지 않습니다."));
         user.validateNotDeleted();
 
-        Channel channel = this.channelRepository.findById(channelId).orElseThrow(
-                () -> new NoSuchElementException("유저를 추가할 채널이 존재하지 않습니다."));
+        Channel channel = this.channelRepository.findById(channelId)
+                .orElseThrow(() -> new NoSuchElementException("유저를 추가할 채널이 존재하지 않습니다."));
         channel.validateNotDeleted();
 
         channel.addUser(user.getId());
@@ -105,12 +105,12 @@ public class BasicChannelService implements ChannelService {
     @Override
     public void removeUserFromChannel(UUID channelId, UUID userId) {
         // 유저가 존재하는지 확인
-        User user = this.userRepository.findById(userId).orElseThrow(
-                () -> new NoSuchElementException("채널에서 탈퇴시킬 유저가 존재하지 않습니다."));
+        User user = this.userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("채널에서 탈퇴시킬 유저가 존재하지 않습니다."));
         user.validateNotDeleted();
 
-        Channel channel = this.channelRepository.findById(channelId).orElseThrow(
-                () -> new NoSuchElementException("유저가 탈퇴할 채널이 존재하지 않습니다."));
+        Channel channel = this.channelRepository.findById(channelId)
+                .orElseThrow(() -> new NoSuchElementException("유저가 탈퇴할 채널이 존재하지 않습니다."));
         channel.validateNotDeleted();
 
         channel.removeUser(userId);
@@ -119,8 +119,8 @@ public class BasicChannelService implements ChannelService {
 
     @Override
     public void delete(UUID id) {
-        Channel channel = this.channelRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("삭제할 채널이 존재하지 않습니다."));
+        Channel channel = this.channelRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("삭제할 채널이 존재하지 않습니다."));
         channel.validateNotDeleted();
 
         // 채널 삭제 시 관련된 엔티티 처리

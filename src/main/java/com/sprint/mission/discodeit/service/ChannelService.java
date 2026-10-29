@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ChannelService {
-    ChannelPublicCreateResponse createPublic(ChannelPublicCreateRequest channelPublicCreateRequest);
+    ChannelPublicCreateResponse createPublic(ChannelPublicCreateRequest createRequest);
 
-    ChannelPrivateCreateResponse createPrivate(ChannelPrivateCreateRequest channelPrivateCreateRequest);
+    ChannelPrivateCreateResponse createPrivate(ChannelPrivateCreateRequest createRequest);
 
-    ChannelUpdateResponse update(ChannelUpdateRequest channelUpdateRequest);
+    ChannelUpdateResponse update(ChannelUpdateRequest updateRequest);
 
     void addUserToChannel(UUID channelId, UUID userId);
 

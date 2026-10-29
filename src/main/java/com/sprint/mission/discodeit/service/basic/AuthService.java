@@ -14,9 +14,9 @@ import java.util.NoSuchElementException;
 public class AuthService {
     private final UserRepository userRepository;
 
-    public UserAuthResponse login(UserAuthRequest userAuthRequest) {
-        String name = userAuthRequest.name();
-        String password = userAuthRequest.password();
+    public UserAuthResponse login(UserAuthRequest authRequest) {
+        String name = authRequest.name();
+        String password = authRequest.password();
 
         User user = this.userRepository.findByName(name).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 유저 이름입니다."));

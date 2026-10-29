@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
-    UserCreateResponse create(UserCreateRequest userCreateRequest, UserProfileImageCreateRequest userProfileImageCreateRequest);
+    UserCreateResponse create(UserCreateRequest createRequest, UserProfileImageCreateRequest imageCreateRequest);
 
-    UserUpdateResponse update(UserUpdateRequest userUpdateRequest, UserProfileImageUpdateRequest userProfileImageUpdateRequest);
+    UserUpdateResponse update(UserUpdateRequest updateRequest, UserProfileImageUpdateRequest imageUpdateRequest);
 
     UserFindResponse findById(UUID id);
 

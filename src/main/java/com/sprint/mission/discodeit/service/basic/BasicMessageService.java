@@ -25,10 +25,11 @@ public class BasicMessageService implements MessageService {
     private final BinaryContentRepository binaryContentRepository;
 
     @Override
-    public MessageCreateResponse create(MessageCreateRequest messageCreateRequest, MessageAttachmentsCreateRequest messageAttachmentsCreateRequest) {
-        UUID authorId = messageCreateRequest.authorId();
-        UUID channelId = messageCreateRequest.channelId();
-        String content = messageCreateRequest.content();
+    public MessageCreateResponse create(MessageCreateRequest createRequest,
+                                        MessageAttachmentsCreateRequest attachmentsCreateRequest) {
+        UUID authorId = createRequest.authorId();
+        UUID channelId = createRequest.channelId();
+        String content = createRequest.content();
 
         // 유저와 채널 존재 여부 확인
         User author = this.userRepository.findById(authorId)
@@ -47,8 +48,8 @@ public class BasicMessageService implements MessageService {
 
         Message message = new Message(authorId, content, channelId);
 
-        if (messageAttachmentsCreateRequest != null) {
-            List<FileUploadRequest> files = messageAttachmentsCreateRequest.files();
+        if (attachmentsCreateRequest != null) {
+            List<FileUploadRequest> files = attachmentsCreateRequest.files();
 
             files.forEach(fileUploadRequest -> {
                 String fileName = fileUploadRequest.fileName();
@@ -66,12 +67,12 @@ public class BasicMessageService implements MessageService {
     }
 
     @Override
-    public MessageUpdateResponse update(MessageUpdateRequest messageUpdateRequest) {
-        UUID id = messageUpdateRequest.id();
-        String newContent = messageUpdateRequest.content();
+    public MessageUpdateResponse update(MessageUpdateRequest updateRequest) {
+        UUID id = updateRequest.id();
+        String newContent = updateRequest.content();
 
-        Message message = this.messageRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("수정할 메세지가 존재하지 않습니다."));
+        Message message = this.messageRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("수정할 메세지가 존재하지 않습니다."));
         message.validateNotDeleted();
 
         message.update(newContent);
@@ -81,8 +82,8 @@ public class BasicMessageService implements MessageService {
 
     @Override
     public MessageFindResponse findById(UUID id) {
-        Message message = this.messageRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("조회할 메세지가 없습니다."));
+        Message message = this.messageRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("조회할 메세지가 없습니다."));
         return MessageFindResponse.from(message);
     }
 
@@ -96,8 +97,8 @@ public class BasicMessageService implements MessageService {
 
     @Override
     public void delete(UUID id) {
-        Message message = this.messageRepository.findById(id).orElseThrow(() -> new NoSuchElementException("삭제할 메세지가 존재하지 " +
-                "않습니다."));
+        Message message = this.messageRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("삭제할 메세지가 존재하지 않습니다."));
         message.validateNotDeleted();
 
         this.binaryContentRepository.findAllByMessageId(id)

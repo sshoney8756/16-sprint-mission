@@ -22,9 +22,9 @@ public class ReadStatusService {
     private final UserRepository userRepository;
     private final ChannelRepository channelRepository;
 
-    public ReadStatusCreateResponse create(ReadStatusCreateRequest readStatusCreateRequest) {
-        UUID userId = readStatusCreateRequest.userId();
-        UUID channelId = readStatusCreateRequest.channelId();
+    public ReadStatusCreateResponse create(ReadStatusCreateRequest createRequest) {
+        UUID userId = createRequest.userId();
+        UUID channelId = createRequest.channelId();
 
         // 유저와 채널 존재 여부 확인
         User author = this.userRepository.findById(userId)
@@ -57,9 +57,9 @@ public class ReadStatusService {
                 .toList();
     }
 
-    public ReadStatusUpdateResponse update(ReadStatusUpdateRequest readStatusUpdateRequest) {
-        UUID id = readStatusUpdateRequest.id();
-        Instant lastReadTime = readStatusUpdateRequest.lastReadTime();
+    public ReadStatusUpdateResponse update(ReadStatusUpdateRequest updateRequest) {
+        UUID id = updateRequest.id();
+        Instant lastReadTime = updateRequest.lastReadTime();
 
         ReadStatus readStatus = this.readStatusRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("메세지 확인 기록이 존재하지 않습니다."));
@@ -69,9 +69,9 @@ public class ReadStatusService {
         return ReadStatusUpdateResponse.from(readStatus);
     }
 
-    public ReadStatusUpdateResponse updateByUserId(ReadStatusUpdateByUserIdRequest readStatusUpdateByUserIdRequest) {
-        UUID userId = readStatusUpdateByUserIdRequest.userId();
-        Instant lastReadTime = readStatusUpdateByUserIdRequest.lastReadTime();
+    public ReadStatusUpdateResponse updateByUserId(ReadStatusUpdateByUserIdRequest updateRequest) {
+        UUID userId = updateRequest.userId();
+        Instant lastReadTime = updateRequest.lastReadTime();
 
         ReadStatus readStatus = this.readStatusRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException("메세지 확인 기록이 존재하지 않습니다."));
@@ -85,7 +85,7 @@ public class ReadStatusService {
         ReadStatus readStatus = this.readStatusRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("메세지 확인 기록이 존재하지 않습니다."));
         readStatus.validateNotDeleted();
-        
+
         this.readStatusRepository.delete(id);
     }
 }

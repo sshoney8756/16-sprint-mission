@@ -25,11 +25,12 @@ public class BasicUserService implements UserService {
     private final UserStatusRepository userStatusRepository;
 
     @Override
-    public UserCreateResponse create(UserCreateRequest userCreateRequest, UserProfileImageCreateRequest userProfileImageCreateRequest) {
+    public UserCreateResponse create(UserCreateRequest createRequest,
+                                     UserProfileImageCreateRequest imageCreateRequest) {
         // TODO: 비밀번호 암호화
 
-        String name = userCreateRequest.name();
-        String email = userCreateRequest.email();
+        String name = createRequest.name();
+        String email = createRequest.email();
 
         this.userRepository.findByName(name).ifPresent((existingUser) -> {
             throw new IllegalArgumentException("이미 같은 이름의 유저가 존재합니다. 이름: %s".formatted(existingUser.getName()));
@@ -38,12 +39,12 @@ public class BasicUserService implements UserService {
             throw new IllegalArgumentException("이미 같은 이메일의 유저가 존재합니다. 이메일: %s".formatted(existingUser.getEmail()));
         });
 
-        User user = new User(name, email, userCreateRequest.password());
+        User user = new User(name, email, createRequest.password());
 
         this.userStatusRepository.save(new UserStatus(user.getId(), Instant.now()));
 
-        if (userProfileImageCreateRequest != null) {
-            FileUploadRequest fileUploadRequest = userProfileImageCreateRequest.fileUploadRequest();
+        if (imageCreateRequest != null) {
+            FileUploadRequest fileUploadRequest = imageCreateRequest.fileUploadRequest();
             String fileName = fileUploadRequest.fileName();
             String extension = fileUploadRequest.extension();
             byte[] content = fileUploadRequest.content();
@@ -59,10 +60,10 @@ public class BasicUserService implements UserService {
 
     @Override
     public UserFindResponse findById(UUID id) {
-        User user = this.userRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("유저가 존재하지 않습니다."));
-        UserStatus userStatus = this.userStatusRepository.findByUserId(id).orElseThrow(
-                () -> new NoSuchElementException("유저의 접속 시간 정보가 존재하지 않습니다."));
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("유저가 존재하지 않습니다."));
+        UserStatus userStatus = this.userStatusRepository.findByUserId(id)
+                .orElseThrow(() -> new NoSuchElementException("유저의 접속 시간 정보가 존재하지 않습니다."));
         return UserFindResponse.of(user, userStatus.isUserOnline());
     }
 
@@ -71,33 +72,33 @@ public class BasicUserService implements UserService {
         return this.userRepository.findAll()
                 .stream()
                 .map(user -> {
-                    UserStatus userStatus = this.userStatusRepository.findByUserId(user.getId()).orElseThrow(
-                            () -> new NoSuchElementException("유저의 접속 시간 정보가 존재하지 않습니다"));
+                    UserStatus userStatus = this.userStatusRepository.findByUserId(user.getId())
+                            .orElseThrow(() -> new NoSuchElementException("유저의 접속 시간 정보가 존재하지 않습니다"));
                     return UserFindResponse.of(user, userStatus.isUserOnline());
                 })
                 .toList();
     }
 
     @Override
-    public UserUpdateResponse update(UserUpdateRequest userUpdateRequest, UserProfileImageUpdateRequest userProfileImageUpdateRequest) {
-        UUID userId = userUpdateRequest.userId();
-        User user = this.userRepository.findById(userId).orElseThrow(
-                () -> new NoSuchElementException("수정할 유저가 존재하지 않습니다."));
+    public UserUpdateResponse update(UserUpdateRequest updateRequest, UserProfileImageUpdateRequest imageUpdateRequest) {
+        UUID userId = updateRequest.userId();
+        User user = this.userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("수정할 유저가 존재하지 않습니다."));
         user.validateNotDeleted();
 
-        String newName = userUpdateRequest.name();
-        String newEmail = userUpdateRequest.email();
-        String newPassword = userUpdateRequest.password();
+        String newName = updateRequest.name();
+        String newEmail = updateRequest.email();
+        String newPassword = updateRequest.password();
 
         user.update(newName, newEmail, newPassword);
 
         UUID profileId = null;
-        if (userProfileImageUpdateRequest != null) {
-            String fileName = userProfileImageUpdateRequest.fileName();
-            String extension = userProfileImageUpdateRequest.extension();
-            byte[] content = userProfileImageUpdateRequest.content();
-            profileId = this.binaryContentRepository.findByUserId(userId).orElseThrow(
-                    () -> new NoSuchElementException("수정할 유저의 프로필 이미지가 존재하지 않습니다.")).getId();
+        if (imageUpdateRequest != null) {
+            String fileName = imageUpdateRequest.fileName();
+            String extension = imageUpdateRequest.extension();
+            byte[] content = imageUpdateRequest.content();
+            profileId = this.binaryContentRepository.findByUserId(userId)
+                    .orElseThrow(() -> new NoSuchElementException("수정할 유저의 프로필 이미지가 존재하지 않습니다.")).getId();
 
             BinaryContent binaryContent = new BinaryContent(fileName, extension, content);
             user.assignProfileImage(profileId);
@@ -110,8 +111,8 @@ public class BasicUserService implements UserService {
 
     @Override
     public void delete(UUID id) {
-        User user = this.userRepository.findById(id).orElseThrow(
-                () -> new NoSuchElementException("삭제할 유저가 존재하지 않습니다."));
+        User user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("삭제할 유저가 존재하지 않습니다."));
         user.validateNotDeleted();
 
         // 유저 삭제 관련된 엔티티 처리
@@ -124,8 +125,8 @@ public class BasicUserService implements UserService {
         user.assignProfileImage(null);
         this.userRepository.update(id, user);
 
-        UserStatus userStatus = this.userStatusRepository.findByUserId(id).orElseThrow(
-                () -> new NoSuchElementException("삭제할 유저의 접속 기록이 존재하지 않습니다."));
+        UserStatus userStatus = this.userStatusRepository.findByUserId(id)
+                .orElseThrow(() -> new NoSuchElementException("삭제할 유저의 접속 기록이 존재하지 않습니다."));
         this.userStatusRepository.delete(userStatus.getId());
 
         this.userRepository.delete(id);

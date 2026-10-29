@@ -8,9 +8,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface MessageService {
-    MessageCreateResponse create(MessageCreateRequest messageCreateRequest, MessageAttachmentsCreateRequest messageAttachmentsCreateRequest);
+    MessageCreateResponse create(MessageCreateRequest createRequest,
+                                 MessageAttachmentsCreateRequest attachmentsCreateRequest);
 
-    MessageUpdateResponse update(MessageUpdateRequest messageUpdateRequest);
+    MessageUpdateResponse update(MessageUpdateRequest updateRequest);
 
     MessageFindResponse findById(UUID id);
 
