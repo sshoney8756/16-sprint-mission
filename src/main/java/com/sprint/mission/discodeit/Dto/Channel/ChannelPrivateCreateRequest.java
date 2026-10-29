@@ -9,7 +9,7 @@ public record ChannelPrivateCreateRequest(
 ) {
     public ChannelPrivateCreateRequest {
         if (userId == null) {
-            throw new IllegalArgumentException("채널 생성을 요청하는 유저 아이디가 없습니다.");
+            throw new NullPointerException("채널 생성을 요청하는 유저 아이디가 없습니다.");
         }
     }
 }

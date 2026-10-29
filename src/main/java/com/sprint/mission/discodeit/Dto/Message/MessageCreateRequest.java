@@ -9,10 +9,10 @@ public record MessageCreateRequest(
 ) {
     public MessageCreateRequest {
         if (authorId == null) {
-            throw new IllegalArgumentException("메세지를 작성할 유저 아이디의 값이 없습니다.");
+            throw new NullPointerException("메세지를 작성할 유저 아이디의 값이 없습니다.");
         }
         if (channelId == null) {
-            throw new IllegalArgumentException("메세지를 작성하는 채널 아이디의 값이 없습니다.");
+            throw new NullPointerException("메세지를 작성하는 채널 아이디의 값이 없습니다.");
         }
     }
 }

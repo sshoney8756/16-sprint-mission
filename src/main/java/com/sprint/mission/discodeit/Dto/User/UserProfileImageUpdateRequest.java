@@ -10,7 +10,7 @@ public record UserProfileImageUpdateRequest(
 ) {
     public UserProfileImageUpdateRequest {
         if (userId == null) {
-            throw new IllegalArgumentException("수정을 요청하는 유저 아이디가 없습니다.");
+            throw new NullPointerException("수정을 요청하는 유저 아이디가 없습니다.");
         }
         if (fileName == null || fileName.isBlank()) {
             throw new IllegalArgumentException("수정할 파일 이름은 공백일 수 없습니다.");
