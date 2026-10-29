@@ -1,5 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
+import com.sprint.mission.discodeit.Dto.File.FileUploadRequest;
 import com.sprint.mission.discodeit.Dto.User.*;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
@@ -41,20 +42,19 @@ public class BasicUserService implements UserService {
 
         this.userStatusRepository.save(new UserStatus(user.getId(), Instant.now()));
 
-        UUID profileId = null;
         if (userProfileImageCreateRequest != null) {
-            String fileName = userProfileImageCreateRequest.fileName();
-            String extension = userProfileImageCreateRequest.extension();
-            byte[] content = userProfileImageCreateRequest.content();
+            FileUploadRequest fileUploadRequest = userProfileImageCreateRequest.fileUploadRequest();
+            String fileName = fileUploadRequest.fileName();
+            String extension = fileUploadRequest.extension();
+            byte[] content = fileUploadRequest.content();
 
             BinaryContent binaryContent = new BinaryContent(fileName, extension, content);
-            profileId = binaryContent.getId();
-            user.assignProfileImage(profileId);
+            user.assignProfileImage(binaryContent.getId());
             this.binaryContentRepository.save(binaryContent);
         }
         this.userRepository.save(user);
 
-        return UserCreateResponse.of(user, profileId);
+        return UserCreateResponse.from(user);
     }
 
     @Override
@@ -67,9 +67,8 @@ public class BasicUserService implements UserService {
     }
 
     @Override
-    public UserFindAllResponse findAll() {
-        List<User> users = this.userRepository.findAll();
-        List<UserFindResponse> userFindResponses = users
+    public List<UserFindResponse> findAll() {
+        return this.userRepository.findAll()
                 .stream()
                 .map(user -> {
                     UserStatus userStatus = this.userStatusRepository.findByUserId(user.getId()).orElseThrow(
@@ -77,7 +76,6 @@ public class BasicUserService implements UserService {
                     return UserFindResponse.of(user, userStatus.isUserOnline());
                 })
                 .toList();
-        return UserFindAllResponse.from(userFindResponses);
     }
 
     @Override

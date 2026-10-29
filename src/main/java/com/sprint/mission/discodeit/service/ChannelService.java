@@ -17,9 +17,9 @@ public interface ChannelService {
 
     void removeUserFromChannel(UUID channelId, UUID userId);
 
-    ChannelFindResponse findById(ChannelFindRequest channelFindRequest);
+    ChannelFindResponse findById(UUID id);
 
-    ChannelFindAllResponse findAllByUserId(ChannelFindAllRequest channelFindAllRequest);
+    List<ChannelFindResponse> findAllByUserId(UUID userId);
 
     void delete(UUID id);
 }

@@ -13,6 +13,11 @@ public record ChannelPrivateCreateResponse(
         ChannelType type
 ) {
     public static ChannelPrivateCreateResponse of(Channel channel, UUID userId) {
-        return new ChannelPrivateCreateResponse(channel.getId(), userId, channel.getUsers().stream().toList(), channel.getType());
+        return new ChannelPrivateCreateResponse(
+                channel.getId(),
+                userId,
+                List.copyOf(channel.getUsers()),
+                channel.getType()
+        );
     }
 }

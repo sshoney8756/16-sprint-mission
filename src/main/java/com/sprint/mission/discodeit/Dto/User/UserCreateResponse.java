@@ -10,7 +10,7 @@ public record UserCreateResponse(
         String email,
         UUID profileId
 ) {
-    public static UserCreateResponse of(User user, UUID profileId) {
-        return new UserCreateResponse(user.getId(), user.getName(), user.getEmail(), profileId);
+    public static UserCreateResponse from(User user) {
+        return new UserCreateResponse(user.getId(), user.getName(), user.getEmail(), user.getProfileId());
     }
 }

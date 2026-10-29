@@ -2,6 +2,7 @@ package com.sprint.mission.discodeit.service;
 
 import com.sprint.mission.discodeit.Dto.User.*;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
@@ -11,7 +12,7 @@ public interface UserService {
 
     UserFindResponse findById(UUID id);
 
-    UserFindAllResponse findAll();
+    List<UserFindResponse> findAll();
 
     void delete(UUID id);
 }

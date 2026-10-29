@@ -17,7 +17,7 @@ public record ChannelFindResponse(
 ) {
     public static ChannelFindResponse of(Channel channel, Instant lastMessageTime) {
         List<UUID> memberIds = channel.getType() == ChannelType.PRIVATE
-                ? channel.getUsers().stream().toList()
+                ? List.copyOf(channel.getUsers())
                 : null;
         return new ChannelFindResponse(
                 channel.getId(),

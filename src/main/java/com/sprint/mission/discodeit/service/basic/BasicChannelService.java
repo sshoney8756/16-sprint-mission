@@ -46,9 +46,7 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public ChannelFindResponse findById(ChannelFindRequest channelFindRequest) {
-        UUID id = channelFindRequest.id();
-
+    public ChannelFindResponse findById(UUID id) {
         Channel channel = this.channelRepository.findById(id).orElseThrow(
                 () -> new NoSuchElementException("존재하지 않는 채널입니다."));
         Instant lastMessageTime = this.messageRepository.findLastMessageOfChannel(id)
@@ -58,10 +56,8 @@ public class BasicChannelService implements ChannelService {
     }
 
     @Override
-    public ChannelFindAllResponse findAllByUserId(ChannelFindAllRequest channelFindAllRequest) {
-        UUID userId = channelFindAllRequest.userId();
-
-        List<ChannelFindResponse> channels = this.channelRepository.findAllByUserId(userId)
+    public List<ChannelFindResponse> findAllByUserId(UUID userId) {
+        return this.channelRepository.findAllByUserId(userId)
                 .stream()
                 .filter(channel ->
                         channel.getType() == ChannelType.PUBLIC
@@ -73,7 +69,6 @@ public class BasicChannelService implements ChannelService {
                     return ChannelFindResponse.of(channel, lastMessageTime);
                 })
                 .toList();
-        return ChannelFindAllResponse.from(channels);
     }
 
     @Override

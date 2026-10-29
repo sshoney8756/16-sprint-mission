@@ -11,7 +11,9 @@ public record UserUpdateRequest(
 ) {
     public UserUpdateRequest {
         Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
-
+        if (userId == null) {
+            throw new IllegalArgumentException("유저 아이디의 값이 없습니다.");
+        }
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
         }
