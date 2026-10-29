@@ -10,7 +10,7 @@ public record ReadStatusFindResponse(
         UUID channelId,
         Instant lastReadTime
 ) {
-    public static ReadStatusFindResponse form(ReadStatus readStatus) {
+    public static ReadStatusFindResponse from(ReadStatus readStatus) {
         return new ReadStatusFindResponse(
                 readStatus.getUserId(),
                 readStatus.getChannelId(),

@@ -27,11 +27,11 @@ public class ReadStatusService {
         UUID channelId = createRequest.channelId();
 
         // 유저와 채널 존재 여부 확인
-        User author = this.userRepository.findById(userId)
+        User user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("메세지를 보내는 유저가 존재하지 않습니다."));
         Channel channel = this.channelRepository.findById(channelId)
                 .orElseThrow(() -> new NoSuchElementException("메세지를 보낼 채널이 존재하지 않습니다."));
-        author.validateNotDeleted();
+        user.validateNotDeleted();
         channel.validateNotDeleted();
 
         // 기존 ReadStatus 존재 여부 확인
@@ -47,13 +47,13 @@ public class ReadStatusService {
     public ReadStatusFindResponse findById(UUID id) {
         ReadStatus readStatus = this.readStatusRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("메세지 확인 기록이 존재하지 않습니다."));
-        return ReadStatusFindResponse.form(readStatus);
+        return ReadStatusFindResponse.from(readStatus);
     }
 
-    public List<ReadStatusFindResponse> findAll() {
-        return this.readStatusRepository.findAll()
+    public List<ReadStatusFindResponse> findAllByUserId(UUID userId) {
+        return this.readStatusRepository.findAllByUserId(userId)
                 .stream()
-                .map(ReadStatusFindResponse::form)
+                .map((ReadStatusFindResponse::from))
                 .toList();
     }
 
@@ -66,18 +66,6 @@ public class ReadStatusService {
         readStatus.update(lastReadTime);
 
         this.readStatusRepository.update(id, readStatus);
-        return ReadStatusUpdateResponse.from(readStatus);
-    }
-
-    public ReadStatusUpdateResponse updateByUserId(ReadStatusUpdateByUserIdRequest updateRequest) {
-        UUID userId = updateRequest.userId();
-        Instant lastReadTime = updateRequest.lastReadTime();
-
-        ReadStatus readStatus = this.readStatusRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException("메세지 확인 기록이 존재하지 않습니다."));
-        readStatus.update(lastReadTime);
-
-        this.readStatusRepository.update(readStatus.getId(), readStatus);
         return ReadStatusUpdateResponse.from(readStatus);
     }
 
