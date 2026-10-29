@@ -58,7 +58,7 @@ public class BasicMessageService implements MessageService {
 
                 BinaryContent binaryContent = new BinaryContent(fileName, extension, fileContent);
                 this.binaryContentRepository.save(binaryContent);
-                message.getAttachmentsIds().add(binaryContent.getId());
+                message.addAttachment(binaryContent.getId());
             });
         }
         this.messageRepository.save(message);
@@ -102,7 +102,10 @@ public class BasicMessageService implements MessageService {
         message.validateNotDeleted();
 
         this.binaryContentRepository.findAllByMessageId(id)
-                .forEach(binaryContent -> this.binaryContentRepository.delete(binaryContent.getId()));
+                .forEach(binaryContent -> {
+                    message.removeAttachment(binaryContent.getId());
+                    this.binaryContentRepository.delete(binaryContent.getId());
+                });
 
         this.messageRepository.delete(id);
     }
