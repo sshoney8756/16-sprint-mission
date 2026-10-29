@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.Dto.User.UserAuthRequest;
-import com.sprint.mission.discodeit.Dto.User.UserAuthResponse;
+import com.sprint.mission.discodeit.Dto.Auth.UserAuthRequest;
+import com.sprint.mission.discodeit.Dto.Auth.UserAuthResponse;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

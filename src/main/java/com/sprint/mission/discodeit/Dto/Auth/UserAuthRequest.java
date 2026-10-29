@@ -1,4 +1,4 @@
-package com.sprint.mission.discodeit.Dto.User;
+package com.sprint.mission.discodeit.Dto.Auth;
 
 public record UserAuthRequest(
         String name,
