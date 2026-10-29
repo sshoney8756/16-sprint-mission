@@ -8,14 +8,12 @@ import java.util.UUID;
 
 public record ChannelPrivateCreateResponse(
         UUID id,
-        UUID userId,
         List<UUID> memberIds,
         ChannelType type
 ) {
-    public static ChannelPrivateCreateResponse of(Channel channel, UUID userId) {
+    public static ChannelPrivateCreateResponse from(Channel channel) {
         return new ChannelPrivateCreateResponse(
                 channel.getId(),
-                userId,
                 List.copyOf(channel.getUsers()),
                 channel.getType()
         );
