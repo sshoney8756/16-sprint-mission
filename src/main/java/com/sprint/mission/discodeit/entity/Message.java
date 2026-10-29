@@ -3,6 +3,7 @@ package com.sprint.mission.discodeit.entity;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,9 +11,9 @@ import java.util.UUID;
 public class Message extends BaseEntity implements Updatable {
     private final UUID authorId;
     private final UUID channelId;
+    private final List<UUID> attachmentsIds;
     private Instant updatedAt;
     private String content;
-    private List<UUID> attachmentsIds;
 
     public Message(UUID authorId, String content, UUID channelId) {
         super();
@@ -20,6 +21,7 @@ public class Message extends BaseEntity implements Updatable {
         this.authorId = authorId;
         this.content = content;
         this.channelId = channelId;
+        this.attachmentsIds = new ArrayList<>();
     }
 
     public Message update(String newContent) {
