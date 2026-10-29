@@ -5,6 +5,7 @@ import lombok.Getter;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 @Getter
@@ -29,6 +30,19 @@ public abstract class BaseEntity implements Serializable {
 
     public boolean isDeleted() {
         return this.status == EntityStatus.DELETED;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || this.getClass() != other.getClass()) return false;
+        BaseEntity entity = (BaseEntity) other;
+        return Objects.equals(this.getId(), entity.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getId());
     }
 
     public enum EntityStatus {
