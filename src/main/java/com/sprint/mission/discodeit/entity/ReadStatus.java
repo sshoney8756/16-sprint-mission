@@ -27,6 +27,10 @@ public class ReadStatus extends BaseEntity implements Updatable {
         }
     }
 
+    public void validateNotDeleted() {
+        if (this.isDeleted()) throw new IllegalStateException("삭제된 메세지 확인 기록입니다.");
+    }
+
     @Override
     public void update() {
         this.updatedAt = Instant.now();
