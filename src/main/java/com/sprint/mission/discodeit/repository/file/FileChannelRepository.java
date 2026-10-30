@@ -9,15 +9,8 @@ import java.util.*;
 
 @Repository
 public class FileChannelRepository extends FileRepository<Channel> implements ChannelRepository {
-    private final String filePath = "./data/channel.ser";
-
     public FileChannelRepository() {
-        if (this.checkIfFileExists(filePath)) {
-            System.out.printf("파일을 찾았습니다: %s, 저장된 데이터를 불러옵니다.\n".formatted(filePath));
-            return;
-        }
-        System.out.printf("기존 파일이 없습니다. 새 데이터를 저장합니다: %s\n".formatted(filePath));
-        this.writeFile(new HashMap<>(), filePath);
+        super("./data/channel.ser", new HashMap<>());
     }
 
     @Override
