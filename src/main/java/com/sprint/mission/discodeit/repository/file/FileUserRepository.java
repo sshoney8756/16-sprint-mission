@@ -25,7 +25,8 @@ public class FileUserRepository extends FileRepository<User> implements UserRepo
     @Override
     public User update(UUID id, User newUser) {
         Map<UUID, User> users = this.readFile(filePath);
-        users.replace(id, newUser);
+        User existing = users.replace(id, newUser);
+        if (existing == null) throw new IllegalStateException("저장되지 않은 유저입니다.");
         this.writeFile(users, filePath);
         return newUser;
     }

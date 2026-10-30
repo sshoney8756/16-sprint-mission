@@ -25,7 +25,8 @@ public class FileChannelRepository extends FileRepository<Channel> implements Ch
     @Override
     public Channel update(UUID id, Channel newChannel) {
         Map<UUID, Channel> channels = this.readFile(filePath);
-        channels.replace(id, newChannel);
+        Channel existing = channels.replace(id, newChannel);
+        if (existing == null) throw new IllegalStateException("저장되지 않은 채널입니다.");
         this.writeFile(channels, filePath);
         return newChannel;
     }

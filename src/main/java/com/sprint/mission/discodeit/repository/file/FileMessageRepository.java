@@ -25,7 +25,8 @@ public class FileMessageRepository extends FileRepository<Message> implements Me
     @Override
     public Message update(UUID id, Message newMessage) {
         Map<UUID, Message> messages = this.readFile(filePath);
-        messages.replace(id, newMessage);
+        Message existing = messages.replace(id, newMessage);
+        if (existing == null) throw new IllegalStateException("저장되지 않은 메세지입니다.");
         this.writeFile(messages, filePath);
         return newMessage;
     }
