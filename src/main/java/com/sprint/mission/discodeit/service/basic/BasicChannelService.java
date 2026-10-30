@@ -2,10 +2,7 @@ package com.sprint.mission.discodeit.service.basic;
 
 import com.sprint.mission.discodeit.Dto.Channel.*;
 import com.sprint.mission.discodeit.entity.*;
-import com.sprint.mission.discodeit.repository.ChannelRepository;
-import com.sprint.mission.discodeit.repository.MessageRepository;
-import com.sprint.mission.discodeit.repository.ReadStatusRepository;
-import com.sprint.mission.discodeit.repository.UserRepository;
+import com.sprint.mission.discodeit.repository.*;
 import com.sprint.mission.discodeit.service.ChannelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +17,7 @@ public class BasicChannelService implements ChannelService {
     private final UserRepository userRepository;
     private final ReadStatusRepository readStatusRepository;
     private final MessageRepository messageRepository;
+    private final BinaryContentRepository binaryContentRepository;
 
     @Override
     public ChannelPublicCreateResponse createPublic(ChannelPublicCreateRequest createRequest) {
@@ -47,7 +45,7 @@ public class BasicChannelService implements ChannelService {
         });
 
         this.channelRepository.save(channel);
-        
+
         distinctMemberIds.forEach(memberId -> {
             this.readStatusRepository.save(new ReadStatus(memberId, channel.getId()));
         });
@@ -133,9 +131,19 @@ public class BasicChannelService implements ChannelService {
                 .orElseThrow(() -> new NoSuchElementException("삭제할 채널이 존재하지 않습니다."));
         channel.validateNotDeleted();
 
-        // 채널 삭제 시 관련된 엔티티 처리
-        this.messageRepository.findAllByChannelId(id).forEach(message -> this.messageRepository.delete(message.getId()));
-        this.readStatusRepository.findAllByChannelId(id).forEach(readStatus -> this.readStatusRepository.delete(readStatus.getId()));
+        // 채널 -> 메세지 -> 첨부 파일 삭제
+        this.messageRepository.findAllByChannelId(id).forEach(message -> {
+            List<UUID> distinctAttachmentIds = new ArrayList<>(new LinkedHashSet<>(message.getAttachmentIds()));
+            
+            this.binaryContentRepository.findAllByIdIn(distinctAttachmentIds).forEach(binaryContent -> {
+                this.binaryContentRepository.delete(binaryContent.getId());
+            });
+            this.messageRepository.delete(message.getId());
+        });
+
+        this.readStatusRepository.findAllByChannelId(id).forEach(readStatus -> {
+            this.readStatusRepository.delete(readStatus.getId());
+        });
 
         this.channelRepository.delete(id);
     }
