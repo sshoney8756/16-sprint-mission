@@ -34,13 +34,21 @@ public class FileUserRepository extends FileRepository<User> implements UserRepo
     @Override
     public Optional<User> findByName(String name) {
         Map<UUID, User> users = this.readFile(filePath);
-        return users.values().stream().filter(user -> user.getName().equals(name)).findFirst();
+        return users.values()
+                .stream()
+                .filter(user -> user.getName().equals(name))
+                .filter(user -> !user.isDeleted())
+                .findFirst();
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
         Map<UUID, User> users = this.readFile(filePath);
-        return users.values().stream().filter(user -> user.getEmail().equals(email)).findFirst();
+        return users.values()
+                .stream()
+                .filter(user -> user.getEmail().equals(email))
+                .filter(user -> !user.isDeleted())
+                .findFirst();
     }
 
     @Override
