@@ -32,6 +32,10 @@ public abstract class BaseEntity implements Serializable {
         return this.status == EntityStatus.DELETED;
     }
 
+    public void validateNotDeleted() {
+        if (this.isDeleted()) throw new IllegalStateException("개체가 삭제된 상태입니다.");
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;

@@ -44,12 +44,6 @@ public class User extends BaseEntity implements Updatable {
         return this;
     }
 
-    public void validateNotDeleted() {
-        if (this.isDeleted()) {
-            throw new IllegalStateException("삭제된 유저입니다.");
-        }
-    }
-
     public void assignProfileImage(UUID profileId) {
         this.profileId = profileId;
         this.update();

@@ -56,10 +56,6 @@ public class Channel extends BaseEntity implements Updatable {
         this.updatedAt = Instant.now();
     }
 
-    public void validateNotDeleted() {
-        if (this.isDeleted()) throw new IllegalStateException("삭제된 채널입니다.");
-    }
-
     public void addUser(UUID userId) {
         this.users.add(userId);
         this.update();

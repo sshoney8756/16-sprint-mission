@@ -48,10 +48,6 @@ public class Message extends BaseEntity implements Updatable {
         this.update();
     }
 
-    public void validateNotDeleted() {
-        if (this.isDeleted()) throw new IllegalStateException("삭제된 메세지입니다.");
-    }
-
     @Override
     public void update() {
         this.updatedAt = Instant.now();
