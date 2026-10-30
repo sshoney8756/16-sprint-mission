@@ -3,6 +3,8 @@ package com.sprint.mission.discodeit;
 import com.sprint.mission.discodeit.Dto.Auth.AuthUserRequest;
 import com.sprint.mission.discodeit.Dto.Auth.AuthUserResponse;
 import com.sprint.mission.discodeit.Dto.BinaryContent.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.Dto.BinaryContent.BinaryContentCreateResponse;
+import com.sprint.mission.discodeit.Dto.BinaryContent.BinaryContentFindResponse;
 import com.sprint.mission.discodeit.Dto.Channel.*;
 import com.sprint.mission.discodeit.Dto.Message.*;
 import com.sprint.mission.discodeit.Dto.ReadStatus.*;
@@ -59,8 +61,7 @@ public class DiscodeitApplication {
             UserCreateResponse user2 = userService.create(
                     new UserCreateRequest("박영수", "yeongsu5678@gmail.com", "zxcvasdf@"),
                     new UserProfileImageCreateRequest(new BinaryContentCreateRequest(
-                            "image", ".png", convertFileToBytes("./data/images/image.png")
-                    )));
+                            "image", ".png", convertFileToBytes("./data/images/image.png"))));
             System.out.printf("유저 생성 --> %s\n", user1);
             System.out.printf("유저 생성 --> %s\n\n", user2);
 
@@ -102,6 +103,10 @@ public class DiscodeitApplication {
             System.out.printf("메세지 확인 기록 생성 --> %s\n", readStatus1);
             System.out.printf("메세지 확인 기록 생성 --> %s\n", readStatus2);
 
+            BinaryContentCreateResponse image1 = binaryContentService.create(
+                    new BinaryContentCreateRequest("cat", "jpg", convertFileToBytes("./data/images/cat.jpg")));
+            System.out.printf("바이너리 데이터 생성 --> %s\n", image1);
+
             // 유저 인증
             AuthUserResponse auth = authService.login(new AuthUserRequest(user1.name(), "asdfqwer!"));
             System.out.printf("유저: %s, 로그인 인증 완료 --> %s\n\n", user1.name(), auth);
@@ -121,6 +126,9 @@ public class DiscodeitApplication {
 
             UserStatusFindResponse foundUserStatus1 = userStatusService.findByUserId(user1.id());
             System.out.printf("유저 접속 기록 단일 조회 --> %s\n\n", foundUserStatus1);
+
+            BinaryContentFindResponse foundImage1 = binaryContentService.findById(image1.id());
+            System.out.printf("바이너리 데이터 단일 조회 --> %s\n\n", foundImage1);
 
             // 조회 (전체)
             List<UserFindResponse> foundUsers = userService.findAll();
@@ -146,6 +154,11 @@ public class DiscodeitApplication {
             List<UserStatusFindResponse> foundUserStatusList = userStatusService.findAll();
             System.out.print("유저 접속 기록 전체 조회 --> [\n");
             foundUserStatusList.forEach((userStatus) -> System.out.printf("\t%s\n", userStatus));
+            System.out.print("]\n\n");
+
+            List<BinaryContentFindResponse> foundBinaryContents = binaryContentService.findAll();
+            System.out.print("바이너리 데이터 전체 조회 --> [\n");
+            foundBinaryContents.forEach((image) -> System.out.printf("\t%s\n", image));
             System.out.print("]\n\n");
 
             // 수정
@@ -208,6 +221,12 @@ public class DiscodeitApplication {
             foundUserStatusList.forEach((userStatus) -> System.out.printf("\t%s\n", userStatus));
             System.out.print("]\n\n");
 
+            System.out.printf("바이너리 데이터 삭제 --> %s\n", image1);
+            binaryContentService.delete(image1.id());
+            foundBinaryContents = binaryContentService.findAll();
+            System.out.print("바이너리 데이터 전체 조회 --> [\n");
+            foundBinaryContents.forEach((image) -> System.out.printf("\t%s\n", image));
+            System.out.print("]\n\n");
 
             // 채널 탈퇴
             System.out.printf("유저 채널 탈퇴 --> 유저 이름: %s, 채널 이름: %s\n", user2.name(), updatedChannel1.name());
