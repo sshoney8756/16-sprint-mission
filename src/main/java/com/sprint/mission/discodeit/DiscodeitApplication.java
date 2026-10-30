@@ -119,6 +119,9 @@ public class DiscodeitApplication {
             ReadStatusFindResponse foundReadStatus1 = readStatusService.findById(readStatus1.id());
             System.out.printf("메세지 확인 기록 단일 조회 --> %s\n\n", foundReadStatus1);
 
+            UserStatusFindResponse foundUserStatus1 = userStatusService.findByUserId(user1.id());
+            System.out.printf("유저 접속 기록 단일 조회 --> %s\n\n", foundUserStatus1);
+
             // 조회 (전체)
             List<UserFindResponse> foundUsers = userService.findAll();
             System.out.print("유저 전체 조회 --> [\n");
@@ -166,14 +169,12 @@ public class DiscodeitApplication {
             ReadStatusUpdateResponse updatedReadStatus1 =
                     readStatusService.update(new ReadStatusUpdateRequest(readStatus1.id(), Instant.now()));
             System.out.printf("메세지 확인 기록 수정 전 --> %s\n", readStatus1);
-            System.out.printf("메세지 수정 후 --> %s\n\n", updatedReadStatus1);
+            System.out.printf("메세지 확인 기록 수정 후 --> %s\n\n", updatedReadStatus1);
 
-            UserStatusUpdateResponse updatedUserStatus = userStatusService.updateByUserId(
+            UserStatusUpdateResponse updateUserStatus1 = userStatusService.updateByUserId(
                     new UserStatusUpdateByUserIdRequest(user1.id(), Instant.now()));
-            foundUserStatusList = userStatusService.findAll();
-            System.out.print("유저 접속 기록 수정 후 전체 조회 --> [\n");
-            foundUserStatusList.forEach((userStatus) -> System.out.printf("\t%s\n", userStatus));
-            System.out.print("]\n\n");
+            System.out.printf("유저 접속 기록 수정 전 --> %s\n", foundUserStatus1);
+            System.out.printf("유저 접속 기록 수정 후 --> %s\n\n", updateUserStatus1);
 
             // 삭제
             System.out.printf("유저 삭제 --> %s\n", updatedUser1);

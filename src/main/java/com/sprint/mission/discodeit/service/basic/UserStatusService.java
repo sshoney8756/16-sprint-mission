@@ -39,6 +39,12 @@ public class UserStatusService {
         return UserStatusFindResponse.from(userStatus);
     }
 
+    public UserStatusFindResponse findByUserId(UUID userId) {
+        UserStatus userStatus = this.userStatusRepository.findByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException("유저 접속 상태가 존재하지 않습니다."));
+        return UserStatusFindResponse.from(userStatus);
+    }
+
     public List<UserStatusFindResponse> findAll() {
         return this.userStatusRepository.findAll()
                 .stream()
