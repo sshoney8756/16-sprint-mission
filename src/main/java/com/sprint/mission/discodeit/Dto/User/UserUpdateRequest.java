@@ -14,16 +14,16 @@ public record UserUpdateRequest(
         if (userId == null) {
             throw new NullPointerException("유저 아이디의 값이 없습니다.");
         }
-        if (name == null || name.isBlank()) {
+        if (name != null && name.isBlank()) {
             throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
         }
-        if (email == null || email.isBlank()) {
+        if (email != null && email.isBlank()) {
             throw new IllegalArgumentException("이메일은 공백일 수 없습니다.");
         }
-        if (password == null || password.isBlank()) {
+        if (password != null && password.isBlank()) {
             throw new IllegalArgumentException("비밀번호는 공백일 수 없습니다.");
         }
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
+        if (email != null && !EMAIL_PATTERN.matcher(email).matches()) {
             throw new IllegalArgumentException("이메일의 형식이 올바르지 않습니다.");
         }
     }
