@@ -1,19 +1,31 @@
 package com.sprint.mission.discodeit;
 
-import com.sprint.mission.discodeit.entity.Channel;
-import com.sprint.mission.discodeit.entity.ChannelType;
-import com.sprint.mission.discodeit.entity.Message;
-import com.sprint.mission.discodeit.entity.User;
+import com.sprint.mission.discodeit.Dto.Auth.AuthUserRequest;
+import com.sprint.mission.discodeit.Dto.Auth.AuthUserResponse;
+import com.sprint.mission.discodeit.Dto.BinaryContent.BinaryContentCreateRequest;
+import com.sprint.mission.discodeit.Dto.Channel.*;
+import com.sprint.mission.discodeit.Dto.Message.*;
+import com.sprint.mission.discodeit.Dto.ReadStatus.*;
+import com.sprint.mission.discodeit.Dto.User.*;
 
+import com.sprint.mission.discodeit.Dto.UserStatus.*;
 import com.sprint.mission.discodeit.service.ChannelService;
 import com.sprint.mission.discodeit.service.MessageService;
 import com.sprint.mission.discodeit.service.UserService;
 
+import com.sprint.mission.discodeit.service.basic.AuthService;
+import com.sprint.mission.discodeit.service.basic.BinaryContentService;
+import com.sprint.mission.discodeit.service.basic.ReadStatusService;
+import com.sprint.mission.discodeit.service.basic.UserStatusService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -21,119 +33,189 @@ import java.util.NoSuchElementException;
 public class DiscodeitApplication {
 
     public static void main(String[] args) {
+        clearDataFiles();
+
         ConfigurableApplicationContext context = SpringApplication.run(DiscodeitApplication.class, args);
         UserService userService;
         ChannelService channelService;
         MessageService messageService;
+        AuthService authService;
+        ReadStatusService readStatusService;
+        UserStatusService userStatusService;
+        BinaryContentService binaryContentService;
 
         userService = context.getBean(UserService.class);
         channelService = context.getBean(ChannelService.class);
         messageService = context.getBean(MessageService.class);
+        authService = context.getBean(AuthService.class);
+        readStatusService = context.getBean(ReadStatusService.class);
+        userStatusService = context.getBean(UserStatusService.class);
+        binaryContentService = context.getBean(BinaryContentService.class);
 
         try {
             // 등록
-            User user1 = userService.create("김철수", "cheolsu1234@gmail.com", "asdfqwer!");
-            User user2 = userService.create("박영수", "yeongsu5678@gmail.com", "zxcvasdf@");
+            UserCreateResponse user1 = userService.create(
+                    new UserCreateRequest("김철수", "cheolsu1234@gmail.com", "asdfqwer!"), null);
+            UserCreateResponse user2 = userService.create(
+                    new UserCreateRequest("박영수", "yeongsu5678@gmail.com", "zxcvasdf@"),
+                    new UserProfileImageCreateRequest(new BinaryContentCreateRequest(
+                            "image", ".png", convertFileToBytes("./data/images/image.png")
+                    )));
             System.out.printf("유저 생성 --> %s\n", user1);
             System.out.printf("유저 생성 --> %s\n\n", user2);
 
-            Channel channel1 = channelService.create("QR 코드", "QR 코드 공개 채널", ChannelType.PUBLIC);
-            Channel channel2 = channelService.create("위클리 페이퍼", "매주 위클리 페이퍼 주제 공개 채널", ChannelType.PUBLIC);
+            ChannelPublicCreateResponse channel1 = channelService.createPublic(
+                    new ChannelPublicCreateRequest("QR 코드", "QR 코드를 제공하는 채널입니다."));
+            ChannelPublicCreateResponse channel2 = channelService.createPublic(
+                    new ChannelPublicCreateRequest("위클리 페이퍼", "매주 위클리 페이퍼를 제공하는 채널입니다."));
+            ChannelPrivateCreateResponse channel3 =
+                    channelService.createPrivate(new ChannelPrivateCreateRequest(List.of(user1.id(), user2.id())));
+
             System.out.printf("채널 생성 --> %s\n", channel1);
-            System.out.printf("채널 생성 --> %s\n\n", channel2);
+            System.out.printf("채널 생성 --> %s\n", channel2);
+            System.out.printf("채널 생성 --> %s\n\n", channel3);
 
             System.out.printf("유저 및 채널 관계 설정\n\n채널 이름: %s, 유저 가입: %s, %s\n채널 이름: %s, 유저 가입: %s\n\n"
-                    , channel1.getName(), user1.getName(), user2.getName(), channel2.getName(), user1.getName());
-            channelService.addUserToChannel(channel1.getId(), user1.getId());
-            channelService.addUserToChannel(channel1.getId(), user2.getId());
-            channelService.addUserToChannel(channel2.getId(), user1.getId());
+                    , channel1.name(), user1.name(), user2.name(), channel2.name(), user1.name());
+            channelService.addUserToChannel(channel1.id(), user1.id());
+            channelService.addUserToChannel(channel1.id(), user2.id());
+            channelService.addUserToChannel(channel2.id(), user1.id());
 
-            user1 = userService.findById(user1.getId())
-                    .orElseThrow(() -> new NoSuchElementException("조회할 유저를 찾을 수 없습니다."));
-            user2 = userService.findById(user2.getId())
-                    .orElseThrow(() -> new NoSuchElementException("조회할 유저를 찾을 수 없습니다."));
-            channel1 = channelService.findById(channel1.getId())
-                    .orElseThrow(() -> new NoSuchElementException("조회할 채널을 찾을 수 없습니다."));
-            channel2 = channelService.findById(channel2.getId())
-                    .orElseThrow(() -> new NoSuchElementException("조회할 채널을 찾을 수 없습니다."));
+            MessageCreateResponse message1 = messageService.create(
+                    new MessageCreateRequest(user1.id(), "안녕하세요 김철수입니다!", channel1.id()), null);
+            MessageCreateResponse message2 = messageService.create(
+                    new MessageCreateRequest(user2.id(), "저는 박영수입니다!", channel1.id()), null);
+            MessageCreateResponse message3 = messageService.create(
+                    new MessageCreateRequest(user1.id(), "안녕하세요! 제가 좋아하는 고양이 짤입니다", channel1.id()),
+                    new MessageAttachmentsCreateRequest(List.of(
+                            new BinaryContentCreateRequest(
+                                    "cat", ".jpg", convertFileToBytes("./data/images/cat.jpg")))));
 
-
-            Message message1 = messageService.create(user1.getId(), "안녕하세요 김철수입니다!", channel1.getId());
-            Message message2 = messageService.create(user2.getId(), "저는 박영수입니다!", channel1.getId());
-            Message message3 = messageService.create(user1.getId(), "안녕하세요!", channel2.getId());
             System.out.printf("메세지 생성 --> %s\n", message1);
             System.out.printf("메세지 생성 --> %s\n", message2);
             System.out.printf("메세지 생성 --> %s\n\n", message3);
 
+            ReadStatusCreateResponse readStatus1 = readStatusService.create(
+                    new ReadStatusCreateRequest(channel1.id(), user1.id()));
+            ReadStatusCreateResponse readStatus2 = readStatusService.create(
+                    new ReadStatusCreateRequest(channel2.id(), user2.id()));
+            System.out.printf("메세지 확인 기록 생성 --> %s\n", readStatus1);
+            System.out.printf("메세지 확인 기록 생성 --> %s\n", readStatus2);
+
+            // 유저 인증
+            AuthUserResponse auth = authService.login(new AuthUserRequest(user1.name(), "asdfqwer!"));
+            System.out.printf("유저: %s, 로그인 인증 완료 --> %s\n\n", user1.name(), auth);
+
             // 조회 (단일)
-            user1 = userService.findById(user1.getId())
-                    .orElseThrow(() -> new NoSuchElementException("조회할 유저를 찾을 수 없습니다."));
-            System.out.printf("유저 단일 조회 --> %s\n\n", user1);
+            UserFindResponse foundUser1 = userService.findById(user1.id());
+            System.out.printf("유저 단일 조회 --> %s\n\n", foundUser1);
 
-            channel1 = channelService.findById(channel1.getId())
-                    .orElseThrow(() -> new NoSuchElementException("조회할 채널을 찾을 수 없습니다."));
-            System.out.printf("채널 단일 조회 --> %s\n\n", channel1);
+            ChannelFindResponse foundChannel1 = channelService.findById(channel1.id());
+            System.out.printf("채널 단일 조회 --> %s\n\n", foundChannel1);
 
-            message1 = messageService.findById(message1.getId())
-                    .orElseThrow(() -> new NoSuchElementException("조회할 메세지를 찾을 수 없습니다."));
-            System.out.printf("메세지 단일 조회 --> %s\n\n", message1);
+            MessageFindResponse foundMessage1 = messageService.findById(message1.id());
+            System.out.printf("메세지 단일 조회 --> %s\n\n", foundMessage1);
+
+            ReadStatusFindResponse foundReadStatus1 = readStatusService.findById(readStatus1.id());
+            System.out.printf("메세지 확인 기록 단일 조회 --> %s\n\n", foundReadStatus1);
 
             // 조회 (전체)
-            List<User> users = userService.findAll();
+            List<UserFindResponse> foundUsers = userService.findAll();
             System.out.print("유저 전체 조회 --> [\n");
-            users.forEach((user) -> System.out.printf("\t%s\n", user));
+            foundUsers.forEach((user) -> System.out.printf("\t%s\n", user));
             System.out.print("]\n\n");
 
-            System.out.print("채널 전체 조회 --> [\n");
-            List<Channel> channels = channelService.findAll();
-            channels.forEach((channel) -> System.out.printf("\t%s\n", channel));
+            List<ChannelFindResponse> foundChannels = channelService.findAllByUserId(user1.id());
+            System.out.printf("유저: '%s'가 조회 가능한 전체 채널 --> [\n", user1.name());
+            foundChannels.forEach((channel) -> System.out.printf("\t%s\n", channel));
             System.out.print("]\n\n");
 
-            System.out.print("메세지 전체 조회 --> [\n");
-            List<Message> messages = messageService.findAll();
-            messages.forEach((message) -> System.out.printf("\t%s\n", message));
+            List<MessageFindResponse> foundMessages = messageService.findAllByChannelId(channel1.id());
+            System.out.printf("채널: '%s'의 메세지 전체 조회 --> [\n", channel1.name());
+            foundMessages.forEach((message) -> System.out.printf("\t%s\n", message));
+            System.out.print("]\n\n");
+
+            List<ReadStatusFindResponse> foundReadStatusList = readStatusService.findAllByUserId(user1.id());
+            System.out.printf("유저: '%s'의 메세지 확인 기록 전체 조회 --> [\n", user1.name());
+            foundReadStatusList.forEach((readStatus) -> System.out.printf("\t%s\n", readStatus));
+            System.out.print("]\n\n");
+
+            List<UserStatusFindResponse> foundUserStatusList = userStatusService.findAll();
+            System.out.print("유저 접속 기록 전체 조회 --> [\n");
+            foundUserStatusList.forEach((userStatus) -> System.out.printf("\t%s\n", userStatus));
             System.out.print("]\n\n");
 
             // 수정
+            UserUpdateResponse updatedUser1 = userService.update(
+                    new UserUpdateRequest(user1.id(), "이수철", null, null),
+                    new UserProfileImageUpdateRequest(user1.id(),
+                            "cat", ".jpg", convertFileToBytes("./data/images/cat.jpg")));
             System.out.printf("유저 수정 전 --> %s\n", user1);
-            user1 = userService.update(user1.getId(), "이수철", null, null);
-            System.out.printf("유저 수정 후 --> %s\n\n", user1);
+            System.out.printf("유저 수정 후 --> %s\n\n", updatedUser1);
+
+            ChannelUpdateResponse updatedChannel1 = channelService.update(
+                    new ChannelUpdateRequest(channel1.id(), "QR코드 2", null));
             System.out.printf("채널 수정 전 --> %s\n", channel1);
-            channel1 = channelService.update(channel1.getId(), "QR코드 2", null);
-            System.out.printf("채널 수정 후 --> %s\n\n", channel1);
+            System.out.printf("채널 수정 후 --> %s\n\n", updatedChannel1);
+
+            MessageUpdateResponse updatedMessage1 = messageService.update(
+                    new MessageUpdateRequest(message1.id(), "안녕하세요 이수철로 변경했습니다!"));
             System.out.printf("메세지 수정 전 --> %s\n", message1);
-            message1 = messageService.update(message1.getId(), "안녕하세요 이수철입니다!");
-            System.out.printf("메세지 수정 후 --> %s\n\n", message1);
+            System.out.printf("메세지 수정 후 --> %s\n\n", updatedMessage1);
+
+            ReadStatusUpdateResponse updatedReadStatus1 =
+                    readStatusService.update(new ReadStatusUpdateRequest(readStatus1.id(), Instant.now()));
+            System.out.printf("메세지 확인 기록 수정 전 --> %s\n", readStatus1);
+            System.out.printf("메세지 수정 후 --> %s\n\n", updatedReadStatus1);
+
+            UserStatusUpdateResponse updatedUserStatus = userStatusService.updateByUserId(
+                    new UserStatusUpdateByUserIdRequest(user1.id(), Instant.now()));
+            foundUserStatusList = userStatusService.findAll();
+            System.out.print("유저 접속 기록 수정 후 전체 조회 --> [\n");
+            foundUserStatusList.forEach((userStatus) -> System.out.printf("\t%s\n", userStatus));
+            System.out.print("]\n\n");
 
             // 삭제
-            System.out.printf("유저 삭제 --> %s\n", user1);
-            userService.delete(user1.getId());
-            users = userService.findAll();
+            System.out.printf("유저 삭제 --> %s\n", updatedUser1);
+            userService.delete(updatedUser1.id());
+            foundUsers = userService.findAll();
             System.out.print("유저 전체 조회 --> [\n");
-            users.forEach((user) -> System.out.printf("\t%s\n", user));
+            foundUsers.forEach((user) -> System.out.printf("\t%s\n", user));
             System.out.print("]\n\n");
 
             System.out.printf("채널 삭제 --> %s\n", channel2);
-            channelService.delete(channel2.getId());
-            channels = channelService.findAll();
-            System.out.print("채널 전체 조회 --> [\n");
-            channels.forEach((channel) -> System.out.printf("\t%s\n", channel));
+            channelService.delete(channel2.id());
+            foundChannels = channelService.findAllByUserId(user1.id());
+            System.out.printf("유저: '%s'가 조회 가능한 전체 채널 --> [\n", updatedUser1.name());
+            foundChannels.forEach((channel) -> System.out.printf("\t%s\n", channel));
             System.out.print("]\n\n");
 
             System.out.printf("메세지 삭제 --> %s\n", message2);
-            messageService.delete(message2.getId());
-            messages = messageService.findAll();
-            System.out.print("메세지 전체 조회 --> [\n");
-            messages.forEach((message) -> System.out.printf("\t%s\n", message));
+            messageService.delete(message2.id());
+            foundMessages = messageService.findAllByChannelId(channel1.id());
+            System.out.printf("채널: '%s'의 메세지 전체 조회 --> [\n", updatedChannel1.name());
+            foundMessages.forEach((message) -> System.out.printf("\t%s\n", message));
             System.out.print("]\n\n");
 
-            // 채널 탈퇴
-            System.out.printf("유저 채널 탈퇴 --> 유저 이름: %s, 채널 이름: %s\n", user2.getName(), channel1.getName());
-            channelService.removeUserFromChannel(channel1.getId(), user2.getId());
-            channels = channelService.findAll();
-            System.out.print("채널 전체 조회 --> [\n");
-            channels.forEach((channel) -> System.out.printf("\t%s\n", channel));
+            foundReadStatusList = readStatusService.findAllByUserId(user2.id());
+            System.out.printf("유저: '%s'의 메세지 확인 기록 전체 조회 --> [\n", user2.name());
+            foundReadStatusList.forEach((readStatus) -> System.out.printf("\t%s\n", readStatus));
             System.out.print("]\n\n");
+
+            foundUserStatusList = userStatusService.findAll();
+            System.out.print("유저 접속 전체 조회 --> [\n");
+            foundUserStatusList.forEach((userStatus) -> System.out.printf("\t%s\n", userStatus));
+            System.out.print("]\n\n");
+
+
+            // 채널 탈퇴
+            System.out.printf("유저 채널 탈퇴 --> 유저 이름: %s, 채널 이름: %s\n", user2.name(), updatedChannel1.name());
+            channelService.removeUserFromChannel(updatedChannel1.id(), user2.id());
+            foundChannels = channelService.findAllByUserId(user2.id());
+            System.out.printf("유저: '%s'가 조회 가능한 전체 채널 --> [\n", user2.name());
+            foundChannels.forEach((channel) -> System.out.printf("\t%s\n", channel));
+            System.out.print("]\n\n");
+
 
         } catch (NoSuchElementException e) {
             System.out.printf("해당 개체를 찾을 수 없습니다. 이유: %s\n", e.getMessage());
@@ -146,5 +228,36 @@ public class DiscodeitApplication {
         } catch (UncheckedIOException e) {
             System.out.printf("파일 입출력 예외가 발생했습니다. 이유: %s\n", e.getMessage());
         }
+    }
+
+    // 임시 바이너리 데이터 요청용
+    public static byte[] convertFileToBytes(String filePath) {
+        try {
+            File file = new File(filePath);
+            return Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            System.out.println("입출력 예외 발생: " + e.getMessage());
+        }
+        return null;
+    }
+
+    public static void clearDataFiles() {
+        List<String> fileList = List.of(
+                "./data/binary_content.ser",
+                "./data/channel.ser",
+                "./data/mesage.ser",
+                "./data/read_status.ser",
+                "./data/user.ser",
+                "./data/user_status.ser"
+        );
+
+        fileList.forEach(filePath -> {
+            File file = new File(filePath);
+            if (file.exists()) {
+                if (file.delete()) {
+                    System.out.printf("파일 삭제: %s\n", file.getName());
+                }
+            }
+        });
     }
 }
