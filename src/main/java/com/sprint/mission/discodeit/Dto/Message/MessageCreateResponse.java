@@ -21,7 +21,7 @@ public record MessageCreateResponse(
                 message.getChannelId(),
                 message.getContent(),
                 message.getCreatedAt(),
-                List.copyOf(message.getAttachmentsIds())
+                List.copyOf(message.getAttachmentIds())
         );
     }
 }

@@ -12,7 +12,7 @@ public record MessageUpdateResponse(
         UUID channelId,
         String content,
         Instant updatedAt,
-        List<UUID> attachmentsIds
+        List<UUID> attachmentIds
 ) {
     public static MessageUpdateResponse from(Message message) {
         return new MessageUpdateResponse(
@@ -21,7 +21,7 @@ public record MessageUpdateResponse(
                 message.getChannelId(),
                 message.getContent(),
                 message.getUpdatedAt(),
-                List.copyOf(message.getAttachmentsIds())
+                List.copyOf(message.getAttachmentIds())
         );
     }
 }

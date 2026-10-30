@@ -12,7 +12,7 @@ public record MessageFindResponse(
         UUID channelId,
         String content,
         Instant updatedAt,
-        List<UUID> attachmentsIds
+        List<UUID> attachmentIds
 ) {
     public static MessageFindResponse from(Message message) {
         return new MessageFindResponse(
@@ -21,7 +21,7 @@ public record MessageFindResponse(
                 message.getChannelId(),
                 message.getContent(),
                 message.getUpdatedAt(),
-                List.copyOf(message.getAttachmentsIds())
+                List.copyOf(message.getAttachmentIds())
         );
     }
 }

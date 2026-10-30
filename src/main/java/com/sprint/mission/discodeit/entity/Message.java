@@ -11,7 +11,7 @@ import java.util.UUID;
 public class Message extends BaseEntity implements Updatable {
     private final UUID authorId;
     private final UUID channelId;
-    private final List<UUID> attachmentsIds;
+    private final List<UUID> attachmentIds;
     private Instant updatedAt;
     private String content;
 
@@ -21,7 +21,7 @@ public class Message extends BaseEntity implements Updatable {
         this.authorId = authorId;
         this.content = content;
         this.channelId = channelId;
-        this.attachmentsIds = new ArrayList<>();
+        this.attachmentIds = new ArrayList<>();
     }
 
     public Message update(String newContent) {
@@ -39,12 +39,12 @@ public class Message extends BaseEntity implements Updatable {
     }
 
     public void addAttachment(UUID attachmentId) {
-        this.attachmentsIds.add(attachmentId);
+        this.attachmentIds.add(attachmentId);
         this.update();
     }
 
     public void removeAttachment(UUID attachmentId) {
-        this.attachmentsIds.remove(attachmentId);
+        this.attachmentIds.remove(attachmentId);
         this.update();
     }
 
