@@ -75,8 +75,10 @@ public class UserStatusService {
     }
 
     public void delete(UUID id) {
-        this.userStatusRepository.findById(id)
+        UserStatus userStatus = this.userStatusRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("유저 접속 상태가 존재하지 않습니다."));
+        userStatus.validateNotDeleted();
+
         this.userStatusRepository.delete(id);
     }
 }

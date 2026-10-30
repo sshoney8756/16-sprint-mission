@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.Dto.File.FileUploadRequest;
+import com.sprint.mission.discodeit.Dto.BinaryContent.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.Dto.User.*;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.User;
@@ -44,10 +44,10 @@ public class BasicUserService implements UserService {
         this.userStatusRepository.save(new UserStatus(user.getId(), Instant.now()));
 
         if (imageCreateRequest != null) {
-            FileUploadRequest fileUploadRequest = imageCreateRequest.fileUploadRequest();
-            String fileName = fileUploadRequest.fileName();
-            String extension = fileUploadRequest.extension();
-            byte[] content = fileUploadRequest.content();
+            BinaryContentCreateRequest binaryContentCreateRequest = imageCreateRequest.binaryContentCreateRequest();
+            String fileName = binaryContentCreateRequest.fileName();
+            String extension = binaryContentCreateRequest.extension();
+            byte[] content = binaryContentCreateRequest.content();
 
             BinaryContent binaryContent = new BinaryContent(fileName, extension, content);
             user.assignProfileImage(binaryContent.getId());
