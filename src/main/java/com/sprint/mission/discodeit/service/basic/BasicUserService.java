@@ -122,9 +122,13 @@ public class BasicUserService implements UserService {
             this.channelRepository.update(channel.getId(), channel);
         });
 
-        this.binaryContentRepository.findByUserId(id).ifPresent(binaryContent -> this.binaryContentRepository.delete(binaryContent.getId()));
-        user.assignProfileImage(null);
-        this.userRepository.update(id, user);
+        if (user.getProfileId() != null) {
+            this.binaryContentRepository.findById(user.getProfileId())
+                    .orElseThrow(() -> new IllegalStateException("삭제할 유저의 프로필 이미지가 없습니다."));
+            this.binaryContentRepository.delete(user.getProfileId());
+            user.assignProfileImage(null);
+            this.userRepository.update(id, user);
+        }
 
         UserStatus userStatus = this.userStatusRepository.findByUserId(id)
                 .orElseThrow(() -> new NoSuchElementException("삭제할 유저의 접속 기록이 존재하지 않습니다."));

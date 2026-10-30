@@ -101,11 +101,13 @@ public class BasicMessageService implements MessageService {
                 .orElseThrow(() -> new NoSuchElementException("삭제할 메세지가 존재하지 않습니다."));
         message.validateNotDeleted();
 
-        this.binaryContentRepository.findAllByMessageId(id)
-                .forEach(binaryContent -> {
-                    message.removeAttachment(binaryContent.getId());
-                    this.binaryContentRepository.delete(binaryContent.getId());
-                });
+        List<UUID> attachmentIds = new ArrayList<>(new LinkedHashSet<>(message.getAttachmentIds()));
+        attachmentIds.forEach(attachmentId -> {
+            if (this.binaryContentRepository.findById(attachmentId).isEmpty())
+                throw new IllegalStateException("삭제할 메세지의 첨부 파일이 없습니다.");
+            this.binaryContentRepository.delete(attachmentId);
+            message.removeAttachment(attachmentId);
+        });
 
         this.messageRepository.delete(id);
     }
