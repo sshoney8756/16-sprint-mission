@@ -31,6 +31,13 @@ public class BinaryContentService {
         return BinaryContentFindResponse.from(binaryContent);
     }
 
+    public List<BinaryContentFindResponse> findAll() {
+        return this.binaryContentRepository.findAll()
+                .stream()
+                .map(BinaryContentFindResponse::from)
+                .toList();
+    }
+
     public List<BinaryContentFindResponse> findAllByIdIn(List<UUID> ids) {
         List<UUID> distinctIds = new ArrayList<>(new LinkedHashSet<>(ids));
 
