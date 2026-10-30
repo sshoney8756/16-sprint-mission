@@ -4,13 +4,13 @@ import com.sprint.mission.discodeit.entity.User;
 
 import java.util.UUID;
 
-public record UserAuthResponse(
+public record AuthUserResponse(
         UUID id,
         String name,
         String email,
         UUID profileId
 ) {
-    public static UserAuthResponse from(User user) {
-        return new UserAuthResponse(user.getId(), user.getName(), user.getEmail(), user.getProfileId());
+    public static AuthUserResponse from(User user) {
+        return new AuthUserResponse(user.getId(), user.getName(), user.getEmail(), user.getProfileId());
     }
 }

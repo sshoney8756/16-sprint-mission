@@ -1,10 +1,10 @@
 package com.sprint.mission.discodeit.Dto.Auth;
 
-public record UserAuthRequest(
+public record AuthUserRequest(
         String name,
         String password
 ) {
-    public UserAuthRequest {
+    public AuthUserRequest {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("이름은 공백일 수 없습니다.");
         }

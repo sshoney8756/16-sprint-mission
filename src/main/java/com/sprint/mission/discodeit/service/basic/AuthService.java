@@ -1,7 +1,7 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.Dto.Auth.UserAuthRequest;
-import com.sprint.mission.discodeit.Dto.Auth.UserAuthResponse;
+import com.sprint.mission.discodeit.Dto.Auth.AuthUserRequest;
+import com.sprint.mission.discodeit.Dto.Auth.AuthUserResponse;
 import com.sprint.mission.discodeit.entity.User;
 import com.sprint.mission.discodeit.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 public class AuthService {
     private final UserRepository userRepository;
 
-    public UserAuthResponse login(UserAuthRequest authRequest) {
+    public AuthUserResponse login(AuthUserRequest authRequest) {
         String name = authRequest.name();
         String password = authRequest.password();
 
@@ -24,6 +24,6 @@ public class AuthService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        return UserAuthResponse.from(user);
+        return AuthUserResponse.from(user);
     }
 }
