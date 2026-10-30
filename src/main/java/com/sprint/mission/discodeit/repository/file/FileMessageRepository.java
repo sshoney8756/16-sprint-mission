@@ -73,6 +73,6 @@ public class FileMessageRepository extends FileRepository<Message> implements Me
         Message message = messages.get(id);
         if (message == null || message.isDeleted()) throw new IllegalArgumentException("삭제할 메세지가 존재하지 않습니다.");
         message.softDelete();
-        this.update(id, message);
+        this.writeFile(messages, filePath);
     }
 }

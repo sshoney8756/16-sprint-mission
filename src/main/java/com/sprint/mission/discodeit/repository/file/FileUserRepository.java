@@ -71,7 +71,7 @@ public class FileUserRepository extends FileRepository<User> implements UserRepo
         User user = users.get(id);
         if (user == null || user.isDeleted()) throw new IllegalArgumentException("삭제할 유저가 존재하지 않습니다.");
         user.softDelete();
-        this.update(id, user);
+        this.writeFile(users, filePath);
     }
 }
 
