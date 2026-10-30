@@ -5,8 +5,6 @@ import com.sprint.mission.discodeit.Dto.BinaryContent.BinaryContentCreateRespons
 import com.sprint.mission.discodeit.Dto.BinaryContent.BinaryContentFindResponse;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.repository.BinaryContentRepository;
-import com.sprint.mission.discodeit.repository.MessageRepository;
-import com.sprint.mission.discodeit.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +34,11 @@ public class BinaryContentService {
     public List<BinaryContentFindResponse> findAllByIdIn(List<UUID> ids) {
         List<UUID> distinctIds = new ArrayList<>(new LinkedHashSet<>(ids));
 
-        return this.binaryContentRepository.findAllByIdIn(distinctIds)
+        List<BinaryContent> binaryContents = binaryContentRepository.findAllByIdIn(distinctIds);
+        if (binaryContents.size() != distinctIds.size())
+            throw new IllegalStateException("조회 개채들 중 존재하지 않는 바이너리 데이터가 있습니다.");
+
+        return binaryContents
                 .stream()
                 .map(BinaryContentFindResponse::from)
                 .toList();
