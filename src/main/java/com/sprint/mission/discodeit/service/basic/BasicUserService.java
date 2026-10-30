@@ -41,7 +41,7 @@ public class BasicUserService implements UserService {
 
         User user = new User(name, email, createRequest.password());
 
-        this.userStatusRepository.save(new UserStatus(user.getId(), Instant.now()));
+        this.userStatusRepository.save(new UserStatus(user.getId(), null));
 
         if (imageCreateRequest != null) {
             BinaryContentCreateRequest binaryContentCreateRequest = imageCreateRequest.binaryContentCreateRequest();

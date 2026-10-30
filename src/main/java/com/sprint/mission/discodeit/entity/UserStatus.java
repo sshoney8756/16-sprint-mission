@@ -27,6 +27,7 @@ public class UserStatus extends BaseEntity implements Updatable {
     }
 
     public boolean isUserOnline() {
+        if (this.lastActiveTime == null) return false;
         Duration duration = Duration.between(this.lastActiveTime, Instant.now());
 
         // 최근 5분 이내 활동했으면 활동 중.
