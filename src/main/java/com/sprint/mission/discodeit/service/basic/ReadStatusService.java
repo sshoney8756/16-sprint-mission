@@ -28,9 +28,9 @@ public class ReadStatusService {
 
         // 유저와 채널 존재 여부 확인
         User user = this.userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchElementException("메세지를 보내는 유저가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("메세지 확인 기록을 생성에 대한 유저가 존재하지 않습니다."));
         Channel channel = this.channelRepository.findById(channelId)
-                .orElseThrow(() -> new NoSuchElementException("메세지를 보낼 채널이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("메세지 확인 기록 생성에 대한 채널이 존재하지 않습니다."));
         user.validateNotDeleted();
         channel.validateNotDeleted();
 
