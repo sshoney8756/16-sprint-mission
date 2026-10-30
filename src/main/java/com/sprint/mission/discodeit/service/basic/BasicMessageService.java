@@ -1,6 +1,6 @@
 package com.sprint.mission.discodeit.service.basic;
 
-import com.sprint.mission.discodeit.Dto.File.FileUploadRequest;
+import com.sprint.mission.discodeit.Dto.BinaryContent.BinaryContentCreateRequest;
 import com.sprint.mission.discodeit.Dto.Message.*;
 import com.sprint.mission.discodeit.entity.BinaryContent;
 import com.sprint.mission.discodeit.entity.Channel;
@@ -49,12 +49,12 @@ public class BasicMessageService implements MessageService {
         Message message = new Message(authorId, content, channelId);
 
         if (attachmentsCreateRequest != null) {
-            List<FileUploadRequest> files = attachmentsCreateRequest.files();
+            List<BinaryContentCreateRequest> files = attachmentsCreateRequest.files();
 
-            files.forEach(fileUploadRequest -> {
-                String fileName = fileUploadRequest.fileName();
-                String extension = fileUploadRequest.extension();
-                byte[] fileContent = fileUploadRequest.content();
+            files.forEach(binaryContentCreateRequest -> {
+                String fileName = binaryContentCreateRequest.fileName();
+                String extension = binaryContentCreateRequest.extension();
+                byte[] fileContent = binaryContentCreateRequest.content();
 
                 BinaryContent binaryContent = new BinaryContent(fileName, extension, fileContent);
                 this.binaryContentRepository.save(binaryContent);

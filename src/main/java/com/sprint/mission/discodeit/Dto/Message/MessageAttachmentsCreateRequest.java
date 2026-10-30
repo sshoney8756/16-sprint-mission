@@ -1,10 +1,10 @@
 package com.sprint.mission.discodeit.Dto.Message;
 
-import com.sprint.mission.discodeit.Dto.File.FileUploadRequest;
+import com.sprint.mission.discodeit.Dto.BinaryContent.BinaryContentCreateRequest;
 
 import java.util.List;
 
 public record MessageAttachmentsCreateRequest(
-        List<FileUploadRequest> files
+        List<BinaryContentCreateRequest> files
 ) {
 }
