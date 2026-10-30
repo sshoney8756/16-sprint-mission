@@ -35,10 +35,7 @@ public class BasicChannelService implements ChannelService {
     @Override
     public ChannelPrivateCreateResponse createPrivate(ChannelPrivateCreateRequest createRequest) {
         List<UUID> memberIds = createRequest.memberIds();
-
         Channel channel = new Channel(memberIds, ChannelType.PRIVATE);
-        this.channelRepository.save(channel);
-
         List<UUID> distinctMemberIds = new ArrayList<>(new LinkedHashSet<>(memberIds));
 
         distinctMemberIds.forEach(memberId -> {
@@ -47,7 +44,11 @@ public class BasicChannelService implements ChannelService {
             if (this.readStatusRepository.findByChannelIdAndUserId(channel.getId(), memberId).isPresent()) {
                 throw new IllegalStateException("이미 존재하는 메세지 확인 기록입니다.");
             }
+        });
 
+        this.channelRepository.save(channel);
+        
+        distinctMemberIds.forEach(memberId -> {
             this.readStatusRepository.save(new ReadStatus(memberId, channel.getId()));
         });
 
